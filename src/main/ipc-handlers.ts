@@ -1,5 +1,5 @@
 import { ipcMain, shell, BrowserWindow } from 'electron'
-import { checkAuth } from './auth'
+import { checkAuth, getGithubBaseUrl } from './auth'
 import { fetchPRs } from './github'
 import { readPrefs, writePrefs } from './prefs'
 import type { Preferences } from '../shared/types'
@@ -20,7 +20,9 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
   })
 
   ipcMain.handle('shell:openExternal', async (_event, url: string) => {
-    if (typeof url === 'string' && url.startsWith('https://github.com')) {
+    if (typeof url !== 'string') return
+    const baseUrl = await getGithubBaseUrl()
+    if (url.startsWith(baseUrl)) {
       await shell.openExternal(url)
     }
   })

@@ -23,6 +23,18 @@ async function findGh(): Promise<string> {
 }
 
 let ghPath: string | null = null
+let githubBaseUrl: string | null = null
+
+export async function getGithubBaseUrl(): Promise<string> {
+  if (githubBaseUrl) return githubBaseUrl
+  try {
+    const htmlUrl = await runGh('api', 'user', '--jq', '.html_url')
+    githubBaseUrl = new URL(htmlUrl).origin  // e.g. "https://github.company.com"
+  } catch {
+    githubBaseUrl = 'https://github.com'
+  }
+  return githubBaseUrl
+}
 
 export async function runGh(...args: string[]): Promise<string> {
   if (!ghPath) ghPath = await findGh()
