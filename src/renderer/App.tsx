@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ThemeProvider, BaseStyles, Box, Spinner, Text } from '@primer/react'
 import { useAuth } from './hooks/useAuth'
 import { usePRs } from './hooks/usePRs'
@@ -14,10 +14,14 @@ export function App(): React.ReactElement {
   const { data, error, loading, lastUpdated, refresh } = usePRs(isAuthenticated)
   const [showPrefs, setShowPrefs] = useState(false)
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
+  // Keep a ref to the full prefs so toggleRepo never needs to re-fetch them
+  const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
 
-  // Load saved hidden repos from prefs on mount
+  // Load prefs on mount — store full object in ref, hiddenRepos in state
   useEffect(() => {
-    window.api.getPrefs().then((p) => setHiddenRepos(p.hiddenRepos ?? [])).catch(() => {})
+    window.api.getPrefs()
+      .then((p) => { prefsRef.current = p; setHiddenRepos(p.hiddenRepos ?? []) })
+      .catch(() => {})
   }, [])
 
   // All unique repos across both sections
@@ -35,7 +39,11 @@ export function App(): React.ReactElement {
       ? hiddenRepos.filter((r) => r !== repo)
       : [...hiddenRepos, repo]
     setHiddenRepos(next)
-    window.api.getPrefs().then((p) => window.api.setPrefs({ ...p, hiddenRepos: next })).catch(() => {})
+    if (prefsRef.current) {
+      const updated = { ...prefsRef.current, hiddenRepos: next }
+      prefsRef.current = updated
+      window.api.setPrefs(updated).catch(() => {})
+    }
   }
 
   const filterPRs = <T extends { repository: { nameWithOwner: string } }>(prs: T[]): T[] =>
