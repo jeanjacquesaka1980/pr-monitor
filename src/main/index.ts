@@ -15,7 +15,7 @@ export function quit(): void {
 app.setName('PR Monitor')
 
 if (process.platform === 'darwin') {
-  app.dock.hide()
+  app.dock?.hide()
 }
 
 function createWindow(): BrowserWindow {
@@ -71,6 +71,6 @@ app.whenReady().then(() => {
   createTray(iconPath, quit)
 })
 
-app.on('window-all-closed', (e: Event) => {
-  e.preventDefault()
+app.on('window-all-closed', () => {
+  // Prevent default quit — app lives in the tray
 })
