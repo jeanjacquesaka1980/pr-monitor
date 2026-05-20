@@ -4,6 +4,9 @@ import type {
   PullRequest,
   CIState,
   ReviewDecision,
+  CheckRun,
+  CheckStatus,
+  CheckConclusion,
   FetchPRsResponse,
 } from '../shared/types'
 
@@ -29,12 +32,51 @@ const QUERY = `
     commits(last: 1) {
       nodes {
         commit {
-          statusCheckRollup { state }
+          statusCheckRollup {
+            state
+            contexts(first: 30) {
+              nodes {
+                ... on CheckRun {
+                  name
+                  status
+                  conclusion
+                  detailsUrl
+                  checkSuite {
+                    workflowRun {
+                      workflow { name }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
   }
 `
+
+interface RawCheckRun {
+  name: string
+  status: CheckStatus
+  conclusion: CheckConclusion
+  detailsUrl: string
+  checkSuite: {
+    workflowRun: {
+      workflow: { name: string }
+    } | null
+  } | null
+}
+
+interface RawContextNode {
+  name?: string
+  status?: CheckStatus
+  conclusion?: CheckConclusion
+  detailsUrl?: string
+  checkSuite?: {
+    workflowRun: { workflow: { name: string } } | null
+  } | null
+}
 
 interface RawPR {
   id: string
@@ -49,7 +91,10 @@ interface RawPR {
   commits: {
     nodes: Array<{
       commit: {
-        statusCheckRollup: { state: CIState } | null
+        statusCheckRollup: {
+          state: CIState
+          contexts: { nodes: RawContextNode[] }
+        } | null
       }
     }>
   }
@@ -63,8 +108,26 @@ interface GraphQLResponse {
   errors?: Array<{ message: string }>
 }
 
+function isCheckRun(node: RawContextNode): node is RawCheckRun {
+  return typeof node.name === 'string' && typeof node.status === 'string'
+}
+
+function normalizeCheckRun(raw: RawCheckRun): CheckRun {
+  return {
+    name: raw.name,
+    status: raw.status,
+    conclusion: raw.conclusion,
+    detailsUrl: raw.detailsUrl,
+    workflowName: raw.checkSuite?.workflowRun?.workflow?.name ?? null,
+  }
+}
+
 function normalizePR(raw: RawPR): PullRequest {
-  const rollup = raw.commits.nodes[0]?.commit?.statusCheckRollup ?? null
+  const commit = raw.commits.nodes[0]?.commit ?? null
+  const rollup = commit?.statusCheckRollup ?? null
+  const contextNodes = rollup?.contexts?.nodes ?? []
+  const checkRuns = contextNodes.filter(isCheckRun).map(normalizeCheckRun)
+
   return {
     id: raw.id,
     number: raw.number,
@@ -76,6 +139,7 @@ function normalizePR(raw: RawPR): PullRequest {
     repository: raw.repository,
     author: raw.author,
     ciState: rollup?.state ?? null,
+    checkRuns,
   }
 }
 
