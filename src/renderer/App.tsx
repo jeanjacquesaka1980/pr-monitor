@@ -33,6 +33,7 @@ export function App(): React.ReactElement {
             lastUpdated={lastUpdated}
             onRefresh={refresh}
             onOpenPrefs={() => setShowPrefs(true)}
+            showingPrefs={showPrefs}
           />
 
           {showPrefs && (
