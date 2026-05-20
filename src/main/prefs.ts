@@ -23,9 +23,12 @@ export function writePrefs(prefs: Preferences): void {
   fs.mkdirSync(path.dirname(PREFS_PATH), { recursive: true })
   fs.writeFileSync(PREFS_PATH, JSON.stringify(prefs, null, 2))
 
+  // Must pass path + args so macOS launches `electron <appPath>` not bare electron
   app.setLoginItemSettings({
     openAtLogin: prefs.launchAtLogin,
     openAsHidden: prefs.startMinimised,
+    path: process.execPath,
+    args: [app.getAppPath()],
   })
 }
 
