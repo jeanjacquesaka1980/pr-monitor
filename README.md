@@ -121,6 +121,38 @@ Preferences are saved to `~/Library/Application Support/PR Monitor/preferences.j
 
 ---
 
+## Troubleshooting
+
+### Force-killing the app
+
+If the app is unresponsive, the tray icon is stuck, or Quit doesn't work:
+
+```bash
+pkill -f Electron
+```
+
+Or to be more targeted:
+
+```bash
+pkill -f 'pr-monitor'
+```
+
+To confirm nothing is left running:
+
+```bash
+pgrep -fl Electron
+```
+
+If the tray icon ghost stays after killing: click it once — macOS removes stale tray icons on interaction.
+
+### Port 5173 still in use after dev mode crashes
+
+```bash
+lsof -ti:5173 | xargs kill -9
+```
+
+---
+
 ## Project structure
 
 ```
