@@ -2,7 +2,7 @@
 
 ![PR Monitor](screenshots/app.png)
 
-A macOS menu bar app that shows all your open GitHub pull requests — authored and under review — with CI status, review decisions, and individual workflow check runs, updated every 60 seconds.
+A macOS menu bar app that shows all your open GitHub pull requests — authored and under review — with CI status, review decisions, and individual workflow check runs, updated every 60 seconds. Works with both GitHub.com and GitHub Enterprise.
 
 ---
 
@@ -26,7 +26,7 @@ brew install gh
 gh auth login
 ```
 
-Follow the prompts — choose **GitHub.com** and authenticate via browser. Verify:
+Follow the prompts and authenticate via browser. Works with **GitHub.com** and **GitHub Enterprise** — the app detects your host automatically. Verify:
 
 ```bash
 gh auth status
@@ -93,10 +93,10 @@ CI
   ✗ test         Failed    ↗
 ──────────────────────────────
 Deploy
-  ● lint         Running
+  ⟳ lint         Running   ↗
 ```
 
-Each check run has a direct link to the run page on GitHub.
+Running jobs show an animated spinner. Each check run has a direct link to the run page on GitHub.
 
 ### Tray icon
 
@@ -113,6 +113,7 @@ Click the gear icon in the header to open preferences:
 | **Start minimised** | Hide the window on launch — access the app via the menu bar icon |
 
 Preferences are saved to `~/Library/Application Support/PR Monitor/preferences.json`.
+The login item is managed via a LaunchAgent plist at `~/Library/LaunchAgents/com.pr-monitor.app.plist` — this ensures the correct app path and arguments are passed on login, which macOS's built-in login items API does not support reliably for non-packaged apps.
 
 ### Window controls
 
@@ -156,16 +157,17 @@ src/
 ├── main/                   ← Electron main process (Node.js)
 │   ├── index.ts            ← App lifecycle, window setup
 │   ├── tray.ts             ← Menu bar icon, popup positioning, context menu
-│   ├── auth.ts             ← gh CLI discovery and execution
+│   ├── auth.ts             ← gh CLI discovery, GitHub host detection, API execution
 │   ├── github.ts           ← GitHub GraphQL query + response normalisation
 │   ├── ipc-handlers.ts     ← IPC bridge (main side)
+│   ├── prefs.ts            ← Preferences read/write + LaunchAgent login item management
 │   └── preload.ts          ← Secure context bridge to renderer
 ├── renderer/               ← React UI (GitHub Primer design system)
 │   ├── components/
 │   │   ├── Header.tsx      ← Title bar with refresh, pin, prefs, quit buttons
 │   │   ├── PRSection.tsx   ← Collapsible AUTHORED / REVIEWING section
 │   │   ├── PRCard.tsx      ← Single PR row with expand toggle
-│   │   ├── CheckRunList.tsx← Workflow check runs grouped by workflow
+│   │   ├── CheckRunList.tsx← Workflow check runs grouped by workflow, spinning indicator for running jobs
 │   │   ├── CIBadge.tsx     ← CI status badge
 │   │   ├── ReviewBadge.tsx ← Review decision badge
 │   │   ├── AuthGate.tsx    ← Shown when gh is not authenticated
@@ -174,8 +176,6 @@ src/
 │   └── hooks/
 │       ├── useAuth.ts      ← Auth state via gh CLI
 │       └── usePRs.ts       ← PR polling with 60s interval
-├── main/
-│   └── prefs.ts            ← Preferences read/write + launch-at-login via setLoginItemSettings
 └── shared/
     └── types.ts            ← TypeScript types shared between main and renderer
 scripts/
