@@ -199,6 +199,9 @@ scripts/
 
 ## Changelog
 
+### v1.2.3
+- Running CI jobs now show a spinning indicator instead of a static stopwatch icon
+
 ### v1.2.2
 - Fix: PR and check run links now work on GitHub Enterprise — host is detected dynamically from the `gh` CLI instead of being hardcoded to `github.com`
 
