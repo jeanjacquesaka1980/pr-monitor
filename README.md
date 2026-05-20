@@ -199,6 +199,9 @@ scripts/
 
 ## Changelog
 
+### v1.2.2
+- Fix: PR and check run links now work on GitHub Enterprise — host is detected dynamically from the `gh` CLI instead of being hardcoded to `github.com`
+
 ### v1.2.1
 - Fix: links (open PR, view check run) now work on first click — Primer React's Tooltip was intercepting clicks to dismiss itself
 - Fix: tooltips no longer get stuck visible after clicking a button
