@@ -80,3 +80,8 @@ export interface CheckAuthResult {
   status: AuthStatus
   username?: string
 }
+
+export interface Preferences {
+  launchAtLogin: boolean
+  startMinimised: boolean
+}

@@ -1,19 +1,21 @@
 import React, { useState } from 'react'
 import { Box, Text, IconButton, Tooltip, Spinner } from '@primer/react'
-import { SyncIcon, PinIcon, PinSlashIcon, XIcon } from '@primer/octicons-react'
+import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon } from '@primer/octicons-react'
 
 interface HeaderProps {
   username: string | undefined
   loading: boolean
   lastUpdated: Date | null
   onRefresh: () => void
+  onOpenPrefs: () => void
+  showingPrefs: boolean
 }
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProps): React.ReactElement {
+export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
 
   const toggleFloat = (): void => {
@@ -53,10 +55,10 @@ export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProp
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, WebkitAppRegion: 'no-drag' }}>
-          {lastUpdated && (
+          {!showingPrefs && lastUpdated && (
             <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>{formatTime(lastUpdated)}</Text>
           )}
-          {loading ? (
+          {!showingPrefs && (loading ? (
             <Spinner size="small" />
           ) : (
             <Tooltip text="Refresh" direction="w">
@@ -69,7 +71,7 @@ export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProp
                 sx={{ color: 'fg.muted' }}
               />
             </Tooltip>
-          )}
+          ))}
           <Tooltip text={floating ? 'Unpin window' : 'Pin window (stay open)'} direction="w">
             <IconButton
               icon={floating ? PinSlashIcon : PinIcon}
@@ -78,6 +80,16 @@ export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProp
               size="small"
               onClick={toggleFloat}
               sx={{ color: floating ? 'accent.fg' : 'fg.muted' }}
+            />
+          </Tooltip>
+          <Tooltip text="Preferences" direction="w">
+            <IconButton
+              icon={GearIcon}
+              aria-label="Preferences"
+              variant="invisible"
+              size="small"
+              onClick={onOpenPrefs}
+              sx={{ color: 'fg.muted' }}
             />
           </Tooltip>
           <Tooltip text="Quit PR Monitor" direction="w">

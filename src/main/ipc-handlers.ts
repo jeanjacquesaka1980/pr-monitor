@@ -1,6 +1,8 @@
 import { ipcMain, shell, BrowserWindow } from 'electron'
 import { checkAuth } from './auth'
 import { fetchPRs } from './github'
+import { readPrefs, writePrefs } from './prefs'
+import type { Preferences } from '../shared/types'
 
 let floating = false
 
@@ -30,5 +32,13 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
 
   ipcMain.handle('app:quit', () => {
     onQuit()
+  })
+
+  ipcMain.handle('prefs:get', () => {
+    return readPrefs()
+  })
+
+  ipcMain.handle('prefs:set', (_event, prefs: Preferences) => {
+    writePrefs(prefs)
   })
 }

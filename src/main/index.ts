@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import { createTray } from './tray'
 import { registerIpcHandlers, isFloating } from './ipc-handlers'
+import { readPrefs, wasOpenedHidden } from './prefs'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -13,6 +14,11 @@ export function quit(): void {
 }
 
 app.setName('PR Monitor')
+
+// Prevent a second instance from opening (e.g. LaunchAgent firing while app is already running)
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
 
 if (process.platform === 'darwin') {
   app.dock?.hide()
@@ -63,12 +69,21 @@ function createWindow(): BrowserWindow {
 }
 
 app.whenReady().then(() => {
+  // Remove legacy setLoginItemSettings entry — we now use a LaunchAgent plist
+  app.setLoginItemSettings({ openAtLogin: false })
+
   const win = createWindow()
   registerIpcHandlers(win, quit)
 
   const iconPath = path.join(__dirname, '../../assets/tray-icon.png')
-
   createTray(iconPath, quit)
+
+  // Show window on launch unless startMinimised is on or macOS opened it hidden
+  const prefs = readPrefs()
+  if (!prefs.startMinimised && !wasOpenedHidden()) {
+    const tray = BrowserWindow.getAllWindows()[0]
+    tray?.show()
+  }
 })
 
 app.on('window-all-closed', () => {
