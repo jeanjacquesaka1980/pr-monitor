@@ -62,14 +62,20 @@ export function CheckRunList({ checkRuns }: CheckRunListProps): React.ReactEleme
 
   const groups = groupByWorkflow(checkRuns)
 
+  const groupEntries = Array.from(groups.entries())
+  const lastGroupIndex = groupEntries.length - 1
+
   return (
     <Box sx={{ borderTop: '1px solid', borderColor: 'border.muted', bg: 'canvas.inset' }}>
-      {Array.from(groups.entries()).map(([workflow, runs]) => (
+      {groupEntries.map(([workflow, runs], groupIndex) => (
         <Box key={workflow}>
-          <Box sx={{ px: 3, py: '6px', borderBottom: '1px solid', borderColor: 'border.subtle' }}>
+          <Box sx={{ px: 3, py: '6px' }}>
             <Text sx={{ fontSize: 0, fontWeight: 'semibold', color: 'fg.muted' }}>{workflow}</Text>
           </Box>
-          {runs.map((run) => {
+          {runs.map((run, runIndex) => {
+            const isLastInGroup = runIndex === runs.length - 1
+            const isLastGroup = groupIndex === lastGroupIndex
+            const showBorder = !isLastInGroup || !isLastGroup
             const { icon, color, label } = getDisplay(run.status, run.conclusion)
             return (
               <Box
@@ -80,9 +86,8 @@ export function CheckRunList({ checkRuns }: CheckRunListProps): React.ReactEleme
                   gap: 2,
                   px: 3,
                   py: '6px',
-                  borderBottom: '1px solid',
+                  borderBottom: showBorder ? '1px solid' : 'none',
                   borderColor: 'border.subtle',
-                  '&:last-child': { borderBottom: 'none' },
                 }}
               >
                 <Box sx={{ color, flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</Box>
