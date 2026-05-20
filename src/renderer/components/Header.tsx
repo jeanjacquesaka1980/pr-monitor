@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
 import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon } from '@primer/octicons-react'
 import { RepoFilter } from './RepoFilter'
@@ -22,6 +22,7 @@ function formatTime(date: Date): string {
 export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
+  const filterButtonRef = useRef<HTMLButtonElement>(null)
   const filterActive = hiddenRepos.length > 0
 
   const toggleFloat = (): void => {
@@ -67,6 +68,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
           {!showingPrefs && repos.length > 0 && (
             <Box sx={{ position: 'relative' }}>
               <IconButton
+                ref={filterButtonRef}
                 icon={FilterIcon}
                 aria-label="Filter repositories"
                 title="Filter repositories"
@@ -81,6 +83,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
                   hiddenRepos={hiddenRepos}
                   onToggle={onToggleRepo}
                   onClose={() => setShowFilter(false)}
+                  triggerRef={filterButtonRef}
                 />
               )}
             </Box>

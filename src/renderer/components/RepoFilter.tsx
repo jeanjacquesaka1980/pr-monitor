@@ -6,20 +6,24 @@ interface RepoFilterProps {
   hiddenRepos: string[]
   onToggle: (repo: string) => void
   onClose: () => void
+  triggerRef: React.RefObject<HTMLButtonElement>
 }
 
-export function RepoFilter({ repos, hiddenRepos, onToggle, onClose }: RepoFilterProps): React.ReactElement {
+export function RepoFilter({ repos, hiddenRepos, onToggle, onClose, triggerRef }: RepoFilterProps): React.ReactElement {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handler = (e: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      const insideDropdown = ref.current?.contains(target) ?? false
+      const insideTrigger = triggerRef.current?.contains(target) ?? false
+      if (!insideDropdown && !insideTrigger) {
         onClose()
       }
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
-  }, [onClose])
+  }, [onClose, triggerRef])
 
   return (
     <Box
