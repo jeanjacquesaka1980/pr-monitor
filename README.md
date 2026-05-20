@@ -200,8 +200,10 @@ scripts/
 
 ## Changelog
 
+### v1.3.2
+- Fix: duplicate check runs no longer appear when a PR is re-opened or a job is re-run — deduplication now uses the run's start timestamp so only the latest run per job is always shown
+
 ### v1.3.1
-- Fix: duplicate check runs no longer appear when a PR is re-opened — only the most recent run per job is shown
 - Fix: REVIEWING section now shows all open PRs from your repos, not just those where your review is explicitly requested
 
 ### v1.3.0
