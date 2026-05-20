@@ -1,6 +1,5 @@
 import { runGh } from './auth'
 import type {
-  PRData,
   PullRequest,
   CIState,
   ReviewDecision,
@@ -10,15 +9,7 @@ import type {
   FetchPRsResponse,
 } from '../shared/types'
 
-const QUERY = `
-  query {
-    authored: search(query: "is:pr is:open author:@me sort:updated-desc", type: ISSUE, first: 50) {
-      nodes { ...PR }
-    }
-    reviewing: search(query: "is:pr is:open review-requested:@me sort:updated-desc", type: ISSUE, first: 50) {
-      nodes { ...PR }
-    }
-  }
+const PR_FRAGMENT = `
   fragment PR on PullRequest {
     id
     number
@@ -55,6 +46,32 @@ const QUERY = `
     }
   }
 `
+
+// Pass 1: discover repos via authored + review-requested
+const DISCOVERY_QUERY = `
+  query {
+    authored: search(query: "is:pr is:open author:@me sort:updated-desc", type: ISSUE, first: 50) {
+      nodes { ...PR }
+    }
+    reviewing: search(query: "is:pr is:open review-requested:@me sort:updated-desc", type: ISSUE, first: 50) {
+      nodes { ...PR }
+    }
+  }
+  ${PR_FRAGMENT}
+`
+
+// Pass 2: fetch ALL open PRs from the discovered repos
+function buildAllPRsQuery(repos: string[]): string {
+  const repoFilter = repos.map((r) => `repo:${r}`).join(' ')
+  return `
+    query {
+      all: search(query: "is:pr is:open ${repoFilter} sort:updated-desc", type: ISSUE, first: 100) {
+        nodes { ...PR }
+      }
+    }
+    ${PR_FRAGMENT}
+  `
+}
 
 interface RawCheckRun {
   name: string
@@ -100,10 +117,17 @@ interface RawPR {
   }
 }
 
-interface GraphQLResponse {
+interface DiscoveryResponse {
   data?: {
     authored: { nodes: RawPR[] }
     reviewing: { nodes: RawPR[] }
+  }
+  errors?: Array<{ message: string }>
+}
+
+interface AllPRsResponse {
+  data?: {
+    all: { nodes: RawPR[] }
   }
   errors?: Array<{ message: string }>
 }
@@ -143,34 +167,56 @@ function normalizePR(raw: RawPR): PullRequest {
   }
 }
 
+async function runQuery<T>(query: string): Promise<T> {
+  const stdout = await runGh('api', 'graphql', '-f', `query=${query}`)
+  return JSON.parse(stdout) as T
+}
+
 export async function fetchPRs(): Promise<FetchPRsResponse> {
-  let stdout: string
+  // Pass 1 — discover authored PRs and repos via review-requested
+  let discovery: DiscoveryResponse
   try {
-    stdout = await runGh('api', 'graphql', '-f', `query=${QUERY}`)
+    discovery = await runQuery<DiscoveryResponse>(DISCOVERY_QUERY)
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    return { ok: false, error: `gh API error: ${message}` }
+    return { ok: false, error: `gh API error: ${err instanceof Error ? err.message : String(err)}` }
   }
 
-  let json: GraphQLResponse
+  if (discovery.errors?.length) return { ok: false, error: discovery.errors[0].message }
+  if (!discovery.data) return { ok: false, error: 'Empty response from GitHub API.' }
+
+  const authored = discovery.data.authored.nodes.map(normalizePR)
+  const authoredIds = new Set(authored.map((pr) => pr.id))
+
+  // Collect all repos discovered in pass 1
+  const repos = new Set([
+    ...discovery.data.authored.nodes.map((pr) => pr.repository.nameWithOwner),
+    ...discovery.data.reviewing.nodes.map((pr) => pr.repository.nameWithOwner),
+  ])
+
+  if (repos.size === 0) {
+    return { ok: true, data: { authored, reviewing: [] } }
+  }
+
+  // Pass 2 — fetch ALL open PRs from discovered repos
+  let allPRs: AllPRsResponse
   try {
-    json = JSON.parse(stdout) as GraphQLResponse
+    allPRs = await runQuery<AllPRsResponse>(buildAllPRsQuery(Array.from(repos)))
   } catch {
-    return { ok: false, error: 'Failed to parse GitHub API response.' }
+    // If pass 2 fails, fall back to pass 1 review-requested results
+    const reviewing = discovery.data.reviewing.nodes
+      .map(normalizePR)
+      .filter((pr) => !authoredIds.has(pr.id))
+    return { ok: true, data: { authored, reviewing } }
   }
 
-  if (json.errors?.length) {
-    return { ok: false, error: json.errors[0].message }
+  if (!allPRs.data) {
+    return { ok: true, data: { authored, reviewing: [] } }
   }
 
-  if (!json.data) {
-    return { ok: false, error: 'Empty response from GitHub API.' }
-  }
+  // REVIEWING = all open PRs from those repos, minus the ones you authored
+  const reviewing = allPRs.data.all.nodes
+    .map(normalizePR)
+    .filter((pr) => !authoredIds.has(pr.id))
 
-  const data: PRData = {
-    authored: json.data.authored.nodes.map(normalizePR),
-    reviewing: json.data.reviewing.nodes.map(normalizePR),
-  }
-
-  return { ok: true, data }
+  return { ok: true, data: { authored, reviewing } }
 }
