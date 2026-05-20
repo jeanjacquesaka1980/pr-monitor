@@ -64,6 +64,9 @@ function createWindow(): BrowserWindow {
 }
 
 app.whenReady().then(() => {
+  // Remove legacy setLoginItemSettings entry — we now use a LaunchAgent plist
+  app.setLoginItemSettings({ openAtLogin: false })
+
   const win = createWindow()
   registerIpcHandlers(win, quit)
 
