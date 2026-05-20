@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Text, IconButton, Tooltip } from '@primer/react'
+import { Box, Text, IconButton } from '@primer/react'
 import {
   CheckCircleFillIcon,
   XCircleFillIcon,
@@ -96,16 +96,15 @@ export function CheckRunList({ checkRuns }: CheckRunListProps): React.ReactEleme
                 </Text>
                 <Text sx={{ fontSize: 0, color, flexShrink: 0 }}>{label}</Text>
                 {run.detailsUrl && (
-                  <Tooltip text="View run" direction="w">
-                    <IconButton
-                      icon={LinkExternalIcon}
-                      aria-label="View check run"
-                      variant="invisible"
-                      size="small"
-                      onClick={() => window.api.openPR(run.detailsUrl)}
-                      sx={{ color: 'fg.muted', flexShrink: 0 }}
-                    />
-                  </Tooltip>
+                  <IconButton
+                    icon={LinkExternalIcon}
+                    aria-label="View check run"
+                    title="View run"
+                    variant="invisible"
+                    size="small"
+                    onClick={() => window.api.openPR(run.detailsUrl)}
+                    sx={{ color: 'fg.muted', flexShrink: 0 }}
+                  />
                 )}
               </Box>
             )

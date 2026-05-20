@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Text, Avatar, IconButton, Tooltip } from '@primer/react'
+import { Box, Text, Avatar, IconButton } from '@primer/react'
 import {
   LinkExternalIcon,
   GitPullRequestDraftIcon,
@@ -100,16 +100,15 @@ export function PRCard({ pr }: PRCardProps): React.ReactElement {
             </Text>
           </Box>
 
-          <Tooltip text="Open in browser" direction="w">
-            <IconButton
-              icon={LinkExternalIcon}
-              aria-label="Open PR in browser"
-              variant="invisible"
-              size="small"
-              onClick={handleOpen}
-              sx={{ flexShrink: 0, color: 'fg.muted' }}
-            />
-          </Tooltip>
+          <IconButton
+            icon={LinkExternalIcon}
+            aria-label="Open PR in browser"
+            title="Open in browser"
+            variant="invisible"
+            size="small"
+            onClick={handleOpen}
+            sx={{ flexShrink: 0, color: 'fg.muted' }}
+          />
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pl: '36px' }}>
