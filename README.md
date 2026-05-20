@@ -199,6 +199,10 @@ scripts/
 
 ## Changelog
 
+### v1.2.1
+- Fix: links (open PR, view check run) now work on first click — Primer React's Tooltip was intercepting clicks to dismiss itself
+- Fix: tooltips no longer get stuck visible after clicking a button
+
 ### v1.2.0
 - Preferences panel (gear icon in header): launch at login, start minimised
 - `npm run start` — builds and launches Electron detached from the terminal; closing the terminal no longer stops the app
