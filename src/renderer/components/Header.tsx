@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
-import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon } from '@primer/octicons-react'
+import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon } from '@primer/octicons-react'
+import { RepoFilter } from './RepoFilter'
 
 interface HeaderProps {
   username: string | undefined
@@ -9,14 +10,19 @@ interface HeaderProps {
   onRefresh: () => void
   onOpenPrefs: () => void
   showingPrefs: boolean
+  repos: string[]
+  hiddenRepos: string[]
+  onToggleRepo: (repo: string) => void
 }
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs }: HeaderProps): React.ReactElement {
+export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
+  const [showFilter, setShowFilter] = useState(false)
+  const filterActive = hiddenRepos.length > 0
 
   const toggleFloat = (): void => {
     const next = !floating
@@ -25,7 +31,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
   }
 
   return (
-    <Box sx={{ flexShrink: 0, borderBottom: '1px solid', borderColor: 'border.default', bg: 'canvas.default' }}>
+    <Box sx={{ flexShrink: 0, borderBottom: '1px solid', borderColor: 'border.default', bg: 'canvas.default', position: 'relative' }}>
       {/* Space for macOS traffic lights */}
       <Box sx={{ height: '28px', WebkitAppRegion: 'drag' }} />
 
@@ -57,6 +63,27 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, WebkitAppRegion: 'no-drag' }}>
           {!showingPrefs && lastUpdated && (
             <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>{formatTime(lastUpdated)}</Text>
+          )}
+          {!showingPrefs && repos.length > 0 && (
+            <Box sx={{ position: 'relative' }}>
+              <IconButton
+                icon={FilterIcon}
+                aria-label="Filter repositories"
+                title="Filter repositories"
+                variant="invisible"
+                size="small"
+                onClick={() => setShowFilter((v) => !v)}
+                sx={{ color: filterActive ? 'accent.fg' : 'fg.muted' }}
+              />
+              {showFilter && (
+                <RepoFilter
+                  repos={repos}
+                  hiddenRepos={hiddenRepos}
+                  onToggle={onToggleRepo}
+                  onClose={() => setShowFilter(false)}
+                />
+              )}
+            </Box>
           )}
           {!showingPrefs && (loading ? (
             <Spinner size="small" />

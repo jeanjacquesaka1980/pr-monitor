@@ -13,7 +13,7 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
   useEffect(() => {
     window.api.getPrefs()
       .then(setPrefs)
-      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true }))
+      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true, hiddenRepos: [] }))
   }, [])
 
   const update = (patch: Partial<Preferences>): void => {

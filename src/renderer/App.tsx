@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ThemeProvider, BaseStyles, Box, Spinner, Text } from '@primer/react'
 import { useAuth } from './hooks/useAuth'
 import { usePRs } from './hooks/usePRs'
@@ -13,6 +13,41 @@ export function App(): React.ReactElement {
   const isAuthenticated = auth.status === 'authenticated'
   const { data, error, loading, lastUpdated, refresh } = usePRs(isAuthenticated)
   const [showPrefs, setShowPrefs] = useState(false)
+  const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
+  // Keep a ref to the full prefs so toggleRepo never needs to re-fetch them
+  const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
+
+  // Load prefs on mount — store full object in ref, hiddenRepos in state
+  useEffect(() => {
+    window.api.getPrefs()
+      .then((p) => { prefsRef.current = p; setHiddenRepos(p.hiddenRepos ?? []) })
+      .catch(() => {})
+  }, [])
+
+  // All unique repos across both sections
+  const allRepos = useMemo(() => {
+    if (!data) return []
+    const repos = new Set([
+      ...data.authored.map((pr) => pr.repository.nameWithOwner),
+      ...data.reviewing.map((pr) => pr.repository.nameWithOwner),
+    ])
+    return Array.from(repos).sort()
+  }, [data])
+
+  const toggleRepo = (repo: string): void => {
+    const next = hiddenRepos.includes(repo)
+      ? hiddenRepos.filter((r) => r !== repo)
+      : [...hiddenRepos, repo]
+    setHiddenRepos(next)
+    if (prefsRef.current) {
+      const updated = { ...prefsRef.current, hiddenRepos: next }
+      prefsRef.current = updated
+      window.api.setPrefs(updated).catch(() => {})
+    }
+  }
+
+  const filterPRs = <T extends { repository: { nameWithOwner: string } }>(prs: T[]): T[] =>
+    hiddenRepos.length === 0 ? prs : prs.filter((pr) => !hiddenRepos.includes(pr.repository.nameWithOwner))
 
   return (
     <ThemeProvider colorMode="dark" nightScheme="dark_dimmed">
@@ -34,6 +69,9 @@ export function App(): React.ReactElement {
             onRefresh={refresh}
             onOpenPrefs={() => setShowPrefs(true)}
             showingPrefs={showPrefs}
+            repos={allRepos}
+            hiddenRepos={hiddenRepos}
+            onToggleRepo={toggleRepo}
           />
 
           {showPrefs && (
@@ -63,12 +101,12 @@ export function App(): React.ReactElement {
                 <>
                   <PRSection
                     title="Authored"
-                    prs={data.authored}
+                    prs={filterPRs(data.authored)}
                     emptyMessage="No open PRs authored by you"
                   />
                   <PRSection
                     title="Reviewing"
-                    prs={data.reviewing}
+                    prs={filterPRs(data.reviewing)}
                     emptyMessage="No PRs waiting for your review"
                   />
                 </>
