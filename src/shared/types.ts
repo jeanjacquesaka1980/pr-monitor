@@ -7,6 +7,27 @@ export type CIState =
   | 'STALE'
   | null
 
+export type CheckStatus = 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'WAITING' | 'PENDING' | 'REQUESTED'
+
+export type CheckConclusion =
+  | 'SUCCESS'
+  | 'FAILURE'
+  | 'CANCELLED'
+  | 'SKIPPED'
+  | 'TIMED_OUT'
+  | 'ACTION_REQUIRED'
+  | 'NEUTRAL'
+  | 'STALE'
+  | null
+
+export interface CheckRun {
+  name: string
+  status: CheckStatus
+  conclusion: CheckConclusion
+  detailsUrl: string
+  workflowName: string | null
+}
+
 export interface PRRepository {
   nameWithOwner: string
 }
@@ -33,6 +54,7 @@ export interface PullRequest {
   author: PRAuthor
   reviewDecision: ReviewDecision
   ciState: CIState
+  checkRuns: CheckRun[]
 }
 
 export interface PRData {

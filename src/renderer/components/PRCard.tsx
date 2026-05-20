@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Text, Avatar, IconButton, Tooltip } from '@primer/react'
-import { LinkExternalIcon, GitPullRequestDraftIcon, GitPullRequestIcon } from '@primer/octicons-react'
+import {
+  LinkExternalIcon,
+  GitPullRequestDraftIcon,
+  GitPullRequestIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+} from '@primer/octicons-react'
 import type { PullRequest } from '@shared/types'
 import { CIBadge } from './CIBadge'
 import { ReviewBadge } from './ReviewBadge'
+import { CheckRunList } from './CheckRunList'
 
 interface PRCardProps {
   pr: PullRequest
@@ -19,6 +26,9 @@ function timeAgo(iso: string): string {
 }
 
 export function PRCard({ pr }: PRCardProps): React.ReactElement {
+  const [expanded, setExpanded] = useState(false)
+  const hasChecks = pr.checkRuns.length > 0 || pr.ciState !== null
+
   const handleOpen = (): void => {
     window.api.openPR(pr.url)
   }
@@ -26,63 +36,96 @@ export function PRCard({ pr }: PRCardProps): React.ReactElement {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        px: 3,
-        py: '10px',
         borderBottom: '1px solid',
         borderColor: 'border.muted',
         '&:last-child': { borderBottom: 'none' },
-        '&:hover': { bg: 'canvas.subtle' },
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-        <Box sx={{ pt: '2px', color: pr.isDraft ? 'fg.muted' : 'open.fg', flexShrink: 0 }}>
-          {pr.isDraft ? <GitPullRequestDraftIcon size={16} /> : <GitPullRequestIcon size={16} />}
-        </Box>
-
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Text
+      {/* Main row */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          px: 3,
+          py: '10px',
+          '&:hover': { bg: 'canvas.subtle' },
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          {/* Expand toggle */}
+          <Box
+            as="button"
+            onClick={() => setExpanded((e) => !e)}
             sx={{
-              fontSize: 1,
-              fontWeight: 'semibold',
-              color: 'fg.default',
-              display: 'block',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
+              pt: '2px',
+              color: 'fg.muted',
+              flexShrink: 0,
+              background: 'none',
+              border: 'none',
+              cursor: hasChecks ? 'pointer' : 'default',
+              p: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
             }}
+            aria-label={expanded ? 'Collapse checks' : 'Expand checks'}
           >
-            {pr.title}
-          </Text>
-          <Text sx={{ fontSize: 0, color: 'fg.muted', display: 'block', mt: '2px' }}>
-            {pr.repository.nameWithOwner} #{pr.number}
-          </Text>
+            {hasChecks && (
+              <Box sx={{ color: 'fg.subtle', display: 'flex' }}>
+                {expanded ? <ChevronDownIcon size={12} /> : <ChevronRightIcon size={12} />}
+              </Box>
+            )}
+            <Box sx={{ color: pr.isDraft ? 'fg.muted' : 'open.fg' }}>
+              {pr.isDraft ? <GitPullRequestDraftIcon size={16} /> : <GitPullRequestIcon size={16} />}
+            </Box>
+          </Box>
+
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Text
+              sx={{
+                fontSize: 1,
+                fontWeight: 'semibold',
+                color: 'fg.default',
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {pr.title}
+            </Text>
+            <Text sx={{ fontSize: 0, color: 'fg.muted', display: 'block', mt: '2px' }}>
+              {pr.repository.nameWithOwner} #{pr.number}
+            </Text>
+          </Box>
+
+          <Tooltip text="Open in browser" direction="w">
+            <IconButton
+              icon={LinkExternalIcon}
+              aria-label="Open PR in browser"
+              variant="invisible"
+              size="small"
+              onClick={handleOpen}
+              sx={{ flexShrink: 0, color: 'fg.muted' }}
+            />
+          </Tooltip>
         </Box>
 
-        <Tooltip text="Open in browser" direction="w">
-          <IconButton
-            icon={LinkExternalIcon}
-            aria-label="Open PR in browser"
-            variant="invisible"
-            size="small"
-            onClick={handleOpen}
-            sx={{ flexShrink: 0, color: 'fg.muted' }}
-          />
-        </Tooltip>
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pl: '24px' }}>
-        <Avatar src={pr.author.avatarUrl} size={16} alt={pr.author.login} />
-        <Text sx={{ fontSize: 0, color: 'fg.muted' }}>{pr.author.login}</Text>
-        <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>·</Text>
-        <Text sx={{ fontSize: 0, color: 'fg.muted' }}>{timeAgo(pr.updatedAt)}</Text>
-        <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-          <ReviewBadge decision={pr.reviewDecision} />
-          <CIBadge state={pr.ciState} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pl: '36px' }}>
+          <Avatar src={pr.author.avatarUrl} size={20} alt={pr.author.login} />
+          <Text sx={{ fontSize: 0, color: 'fg.muted' }}>{pr.author.login}</Text>
+          <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>·</Text>
+          <Text sx={{ fontSize: 0, color: 'fg.muted' }}>{timeAgo(pr.updatedAt)}</Text>
+          <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+            <ReviewBadge decision={pr.reviewDecision} />
+            <CIBadge state={pr.ciState} />
+          </Box>
         </Box>
       </Box>
+
+      {/* Workflow expand */}
+      {expanded && <CheckRunList checkRuns={pr.checkRuns} />}
     </Box>
   )
 }
