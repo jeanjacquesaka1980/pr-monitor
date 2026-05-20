@@ -84,4 +84,5 @@ export interface CheckAuthResult {
 export interface Preferences {
   launchAtLogin: boolean
   startMinimised: boolean
+  hiddenRepos: string[]
 }

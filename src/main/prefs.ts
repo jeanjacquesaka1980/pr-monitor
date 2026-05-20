@@ -16,6 +16,7 @@ const LAUNCH_AGENT_PATH = path.join(
 const DEFAULTS: Preferences = {
   launchAtLogin: false,
   startMinimised: true,
+  hiddenRepos: [],
 }
 
 export function readPrefs(): Preferences {
