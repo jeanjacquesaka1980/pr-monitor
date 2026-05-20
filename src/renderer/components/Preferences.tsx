@@ -11,16 +11,17 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    window.api.getPrefs().then(setPrefs)
+    window.api.getPrefs()
+      .then(setPrefs)
+      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true }))
   }, [])
 
-  const update = async (patch: Partial<Preferences>): Promise<void> => {
+  const update = (patch: Partial<Preferences>): void => {
     if (!prefs) return
     const next = { ...prefs, ...patch }
     setPrefs(next)
     setSaving(true)
-    await window.api.setPrefs(next)
-    setSaving(false)
+    window.api.setPrefs(next).finally(() => setSaving(false))
   }
 
   return (
