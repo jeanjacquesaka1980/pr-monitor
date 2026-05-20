@@ -125,16 +125,10 @@ Preferences are saved to `~/Library/Application Support/PR Monitor/preferences.j
 
 ### Force-killing the app
 
-If the app is unresponsive, the tray icon is stuck, or Quit doesn't work:
+If the app is unresponsive, the tray icon is stuck, or Quit doesn't work, use `-9` (SIGKILL — instant, no chance to ignore):
 
 ```bash
-pkill -f Electron
-```
-
-Or to be more targeted:
-
-```bash
-pkill -f 'pr-monitor'
+pkill -9 -f Electron
 ```
 
 To confirm nothing is left running:
@@ -143,7 +137,9 @@ To confirm nothing is left running:
 pgrep -fl Electron
 ```
 
-If the tray icon ghost stays after killing: click it once — macOS removes stale tray icons on interaction.
+**Tray icon stays after kill** — this is normal macOS behaviour. The OS keeps the last frame visible until you interact with the menu bar. Click the ghost icon once and it disappears.
+
+**Window stays after kill** — same cause. Click anywhere on the desktop or another app window to force macOS to redraw.
 
 ### Port 5173 still in use after dev mode crashes
 

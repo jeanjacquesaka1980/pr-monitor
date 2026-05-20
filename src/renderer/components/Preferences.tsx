@@ -57,7 +57,7 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
             <ToggleSwitch
               aria-labelledby="launch-at-login-label"
               checked={prefs.launchAtLogin}
-              onChange={(checked) => update({ launchAtLogin: checked })}
+              onClick={() => update({ launchAtLogin: !prefs.launchAtLogin })}
               size="small"
             />
           </Box>
@@ -72,7 +72,7 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
             <ToggleSwitch
               aria-labelledby="start-minimised-label"
               checked={prefs.startMinimised}
-              onChange={(checked) => update({ startMinimised: checked })}
+              onClick={() => update({ startMinimised: !prefs.startMinimised })}
               size="small"
             />
           </Box>
