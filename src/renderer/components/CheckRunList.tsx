@@ -1,10 +1,9 @@
 import React from 'react'
-import { Box, Text, IconButton } from '@primer/react'
+import { Box, Text, IconButton, Spinner } from '@primer/react'
 import {
   CheckCircleFillIcon,
   XCircleFillIcon,
   SkipFillIcon,
-  StopwatchIcon,
   DotFillIcon,
   LinkExternalIcon,
 } from '@primer/octicons-react'
@@ -22,7 +21,7 @@ interface RunDisplay {
 
 function getDisplay(status: CheckStatus, conclusion: CheckConclusion): RunDisplay {
   if (status !== 'COMPLETED') {
-    return { icon: <StopwatchIcon size={12} />, color: 'attention.fg', label: 'Running' }
+    return { icon: <Spinner sx={{ width: '12px', height: '12px' }} />, color: 'attention.fg', label: 'Running' }
   }
   switch (conclusion) {
     case 'SUCCESS':
