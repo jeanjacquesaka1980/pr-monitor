@@ -32,6 +32,7 @@ const PR_FRAGMENT = `
                   status
                   conclusion
                   detailsUrl
+                  startedAt
                   checkSuite {
                     workflowRun {
                       workflow { name }
@@ -78,6 +79,7 @@ interface RawCheckRun {
   status: CheckStatus
   conclusion: CheckConclusion
   detailsUrl: string
+  startedAt: string | null
   checkSuite: {
     workflowRun: {
       workflow: { name: string }
@@ -90,6 +92,7 @@ interface RawContextNode {
   status?: CheckStatus
   conclusion?: CheckConclusion
   detailsUrl?: string
+  startedAt?: string | null
   checkSuite?: {
     workflowRun: { workflow: { name: string } } | null
   } | null
@@ -150,7 +153,18 @@ function normalizePR(raw: RawPR): PullRequest {
   const commit = raw.commits.nodes[0]?.commit ?? null
   const rollup = commit?.statusCheckRollup ?? null
   const contextNodes = rollup?.contexts?.nodes ?? []
-  const checkRuns = contextNodes.filter(isCheckRun).map(normalizeCheckRun)
+
+  // Deduplicate by name — keep the run with the latest startedAt (most recent re-run)
+  const checkRunMap = new Map<string, RawCheckRun>()
+  for (const node of contextNodes) {
+    if (isCheckRun(node)) {
+      const existing = checkRunMap.get(node.name)
+      if (!existing || (node.startedAt ?? '') > (existing.startedAt ?? '')) {
+        checkRunMap.set(node.name, node)
+      }
+    }
+  }
+  const checkRuns = Array.from(checkRunMap.values()).map(normalizeCheckRun)
 
   return {
     id: raw.id,
