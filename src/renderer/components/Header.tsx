@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Text, IconButton, Tooltip, Spinner } from '@primer/react'
+import { Box, Text, IconButton, Spinner } from '@primer/react'
 import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon } from '@primer/octicons-react'
 
 interface HeaderProps {
@@ -61,47 +61,43 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
           {!showingPrefs && (loading ? (
             <Spinner size="small" />
           ) : (
-            <Tooltip text="Refresh" direction="w">
-              <IconButton
-                icon={SyncIcon}
-                aria-label="Refresh PRs"
-                variant="invisible"
-                size="small"
-                onClick={onRefresh}
-                sx={{ color: 'fg.muted' }}
-              />
-            </Tooltip>
-          ))}
-          <Tooltip text={floating ? 'Unpin window' : 'Pin window (stay open)'} direction="w">
             <IconButton
-              icon={floating ? PinSlashIcon : PinIcon}
-              aria-label={floating ? 'Unpin window' : 'Pin window'}
+              icon={SyncIcon}
+              aria-label="Refresh PRs"
+              title="Refresh"
               variant="invisible"
               size="small"
-              onClick={toggleFloat}
-              sx={{ color: floating ? 'accent.fg' : 'fg.muted' }}
-            />
-          </Tooltip>
-          <Tooltip text="Preferences" direction="w">
-            <IconButton
-              icon={GearIcon}
-              aria-label="Preferences"
-              variant="invisible"
-              size="small"
-              onClick={onOpenPrefs}
+              onClick={onRefresh}
               sx={{ color: 'fg.muted' }}
             />
-          </Tooltip>
-          <Tooltip text="Quit PR Monitor" direction="w">
-            <IconButton
-              icon={XIcon}
-              aria-label="Quit PR Monitor"
-              variant="invisible"
-              size="small"
-              onClick={() => window.api.quit()}
-              sx={{ color: 'fg.muted', '&:hover': { color: 'danger.fg' } }}
-            />
-          </Tooltip>
+          ))}
+          <IconButton
+            icon={floating ? PinSlashIcon : PinIcon}
+            aria-label={floating ? 'Unpin window' : 'Pin window'}
+            title={floating ? 'Unpin window' : 'Pin window (stay open)'}
+            variant="invisible"
+            size="small"
+            onClick={toggleFloat}
+            sx={{ color: floating ? 'accent.fg' : 'fg.muted' }}
+          />
+          <IconButton
+            icon={GearIcon}
+            aria-label="Preferences"
+            title="Preferences"
+            variant="invisible"
+            size="small"
+            onClick={onOpenPrefs}
+            sx={{ color: 'fg.muted' }}
+          />
+          <IconButton
+            icon={XIcon}
+            aria-label="Quit PR Monitor"
+            title="Quit PR Monitor"
+            variant="invisible"
+            size="small"
+            onClick={() => window.api.quit()}
+            sx={{ color: 'fg.muted', '&:hover': { color: 'danger.fg' } }}
+          />
         </Box>
       </Box>
     </Box>
