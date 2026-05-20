@@ -200,6 +200,10 @@ scripts/
 
 ## Changelog
 
+### v1.3.1
+- Fix: duplicate check runs no longer appear when a PR is re-opened — only the most recent run per job is shown
+- Fix: REVIEWING section now shows all open PRs from your repos, not just those where your review is explicitly requested
+
 ### v1.3.0
 - New: repository filter dropdown in the header — check/uncheck repos to show only the PRs you care about, applies to both AUTHORED and REVIEWING. Filter is highlighted in blue when active and persists across sessions.
 
