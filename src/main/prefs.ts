@@ -1,9 +1,17 @@
 import { app } from 'electron'
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
+import { execSync } from 'child_process'
 import type { Preferences } from '../shared/types'
 
 const PREFS_PATH = path.join(app.getPath('userData'), 'preferences.json')
+const LAUNCH_AGENT_LABEL = 'com.pr-monitor.app'
+const LAUNCH_AGENT_PATH = path.join(
+  os.homedir(),
+  'Library/LaunchAgents',
+  `${LAUNCH_AGENT_LABEL}.plist`,
+)
 
 const DEFAULTS: Preferences = {
   launchAtLogin: false,
@@ -19,19 +27,54 @@ export function readPrefs(): Preferences {
   }
 }
 
+// macOS 13+ SMAppService silently drops args from setLoginItemSettings,
+// so we manage a LaunchAgent plist directly — it supports full argv.
+function syncLaunchAgent(prefs: Preferences): void {
+  const run = (cmd: string): void => {
+    try { execSync(cmd, { stdio: 'ignore' }) } catch { /* ignore */ }
+  }
+
+  if (!prefs.launchAtLogin) {
+    run(`launchctl unload "${LAUNCH_AGENT_PATH}"`)
+    try { fs.unlinkSync(LAUNCH_AGENT_PATH) } catch { /* ignore */ }
+    return
+  }
+
+  // --login-launch lets index.ts know this launch came from the login item
+  const plist = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>${LAUNCH_AGENT_LABEL}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${process.execPath}</string>
+    <string>${app.getAppPath()}</string>
+    <string>--login-launch</string>
+  </array>
+  <key>RunAtLoad</key>
+  <false/>
+  <key>KeepAlive</key>
+  <false/>
+</dict>
+</plist>
+`
+
+  fs.mkdirSync(path.dirname(LAUNCH_AGENT_PATH), { recursive: true })
+  fs.writeFileSync(LAUNCH_AGENT_PATH, plist)
+  // Unload first in case it was already loaded, then reload with new config
+  run(`launchctl unload "${LAUNCH_AGENT_PATH}"`)
+  run(`launchctl load "${LAUNCH_AGENT_PATH}"`)
+}
+
 export function writePrefs(prefs: Preferences): void {
   fs.mkdirSync(path.dirname(PREFS_PATH), { recursive: true })
   fs.writeFileSync(PREFS_PATH, JSON.stringify(prefs, null, 2))
-
-  // Must pass path + args so macOS launches `electron <appPath>` not bare electron
-  app.setLoginItemSettings({
-    openAtLogin: prefs.launchAtLogin,
-    openAsHidden: prefs.startMinimised,
-    path: process.execPath,
-    args: [app.getAppPath()],
-  })
+  syncLaunchAgent(prefs)
 }
 
+// True when launched via the LaunchAgent (login item) rather than manually
 export function wasOpenedHidden(): boolean {
-  return app.getLoginItemSettings().wasOpenedAsHidden
+  return process.argv.includes('--login-launch') && readPrefs().startMinimised
 }
