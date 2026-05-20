@@ -76,6 +76,7 @@ npm run start
 | CI badge | `Passing` / `Failing` / `Pending` / `No CI` |
 | Review badge | `Approved` / `Changes` / `Review required` |
 | `↗` button | Opens the PR in your browser |
+| Filter button | Filter PRs by repository — highlighted blue when active |
 | Refresh button | Manual refresh (auto-refreshes every 60s) |
 | Pin button | Keep the window always on top — clicking elsewhere won't close it |
 | Gear button | Open preferences panel |
@@ -198,6 +199,9 @@ scripts/
 ---
 
 ## Changelog
+
+### v1.3.0
+- New: repository filter dropdown in the header — check/uncheck repos to show only the PRs you care about, applies to both AUTHORED and REVIEWING. Filter is highlighted in blue when active and persists across sessions.
 
 ### v1.2.3
 - Running CI jobs now show a spinning indicator instead of a static stopwatch icon
