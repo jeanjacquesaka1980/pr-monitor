@@ -71,7 +71,7 @@ npm run start
 
 | Element | Description |
 |---|---|
-| **AUTHORED** / **REVIEWING** | Click the section header to collapse or expand |
+| **YOUR PRs** / **OTHERS' PRs** | Click the section header to collapse or expand |
 | Chevron `›` on a PR | Expand to see all CI workflow check runs |
 | CI badge | `Passing` / `Failing` / `Pending` / `No CI` |
 | Review badge | `Approved` / `Changes` / `Review required` |
@@ -199,6 +199,10 @@ scripts/
 ---
 
 ## Changelog
+
+### v1.3.3
+- Sections renamed: **Authored** → **Your PRs**, **Reviewing** → **Others' PRs**
+- Fix: clicking the filter icon again now correctly closes the dropdown
 
 ### v1.3.2
 - Fix: duplicate check runs no longer appear when a PR is re-opened or a job is re-run — deduplication now uses the run's start timestamp so only the latest run per job is always shown

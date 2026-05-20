@@ -100,14 +100,14 @@ export function App(): React.ReactElement {
               {data && (
                 <>
                   <PRSection
-                    title="Authored"
+                    title="Your PRs"
                     prs={filterPRs(data.authored)}
                     emptyMessage="No open PRs authored by you"
                   />
                   <PRSection
-                    title="Reviewing"
+                    title="Others' PRs"
                     prs={filterPRs(data.reviewing)}
-                    emptyMessage="No PRs waiting for your review"
+                    emptyMessage="No other open PRs in your repos"
                   />
                 </>
               )}
