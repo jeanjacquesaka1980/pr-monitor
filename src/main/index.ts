@@ -15,6 +15,11 @@ export function quit(): void {
 
 app.setName('PR Monitor')
 
+// Prevent a second instance from opening (e.g. LaunchAgent firing while app is already running)
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
+
 if (process.platform === 'darwin') {
   app.dock?.hide()
 }

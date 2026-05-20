@@ -54,7 +54,7 @@ function syncLaunchAgent(prefs: Preferences): void {
     <string>--login-launch</string>
   </array>
   <key>RunAtLoad</key>
-  <false/>
+  <true/>
   <key>KeepAlive</key>
   <false/>
 </dict>
@@ -63,9 +63,8 @@ function syncLaunchAgent(prefs: Preferences): void {
 
   fs.mkdirSync(path.dirname(LAUNCH_AGENT_PATH), { recursive: true })
   fs.writeFileSync(LAUNCH_AGENT_PATH, plist)
-  // Unload first in case it was already loaded, then reload with new config
-  run(`launchctl unload "${LAUNCH_AGENT_PATH}"`)
-  run(`launchctl load "${LAUNCH_AGENT_PATH}"`)
+  // Write only — macOS picks up the plist at next login automatically.
+  // We do NOT launchctl load here to avoid double-launching a running app.
 }
 
 export function writePrefs(prefs: Preferences): void {
