@@ -150,7 +150,16 @@ function normalizePR(raw: RawPR): PullRequest {
   const commit = raw.commits.nodes[0]?.commit ?? null
   const rollup = commit?.statusCheckRollup ?? null
   const contextNodes = rollup?.contexts?.nodes ?? []
-  const checkRuns = contextNodes.filter(isCheckRun).map(normalizeCheckRun)
+
+  // Deduplicate by name — keep the last occurrence which is the most recent run
+  const checkRunMap = new Map<string, CheckRun>()
+  for (const node of contextNodes) {
+    if (isCheckRun(node)) {
+      const run = normalizeCheckRun(node)
+      checkRunMap.set(run.name, run)
+    }
+  }
+  const checkRuns = Array.from(checkRunMap.values())
 
   return {
     id: raw.id,
