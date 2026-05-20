@@ -1,3 +1,4 @@
+// CheckRunList — groups CI check runs by workflow and renders status icons
 import React from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
 import {
