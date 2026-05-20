@@ -24,7 +24,7 @@ async function findGh(): Promise<string> {
 
 let ghPath: string | null = null
 
-async function runGh(...args: string[]): Promise<string> {
+export async function runGh(...args: string[]): Promise<string> {
   if (!ghPath) ghPath = await findGh()
   const { stdout } = await execFileAsync(ghPath, args, { timeout: 10_000 })
   return stdout.trim()
@@ -42,11 +42,3 @@ export async function checkAuth(): Promise<CheckAuthResult> {
   }
 }
 
-export async function getToken(): Promise<string | null> {
-  try {
-    const token = await runGh('auth', 'token')
-    return token || null
-  } catch {
-    return null
-  }
-}

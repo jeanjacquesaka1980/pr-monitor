@@ -1,4 +1,4 @@
-import { getToken } from './auth'
+import { runGh } from './auth'
 import type {
   PRData,
   PullRequest,
@@ -6,8 +6,6 @@ import type {
   ReviewDecision,
   FetchPRsResponse,
 } from '../shared/types'
-
-const GRAPHQL_ENDPOINT = 'https://api.github.com/graphql'
 
 const QUERY = `
   query {
@@ -82,30 +80,20 @@ function normalizePR(raw: RawPR): PullRequest {
 }
 
 export async function fetchPRs(): Promise<FetchPRsResponse> {
-  const token = await getToken()
-  if (!token) {
-    return { ok: false, error: 'Not authenticated. Run `gh auth login` in your terminal.' }
-  }
-
-  let res: Response
+  let stdout: string
   try {
-    res = await fetch(GRAPHQL_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query: QUERY }),
-    })
+    stdout = await runGh('api', 'graphql', '-f', `query=${QUERY}`)
   } catch (err) {
-    return { ok: false, error: 'Network error — check your connection.' }
+    const message = err instanceof Error ? err.message : String(err)
+    return { ok: false, error: `gh API error: ${message}` }
   }
 
-  if (!res.ok) {
-    return { ok: false, error: `GitHub API error: ${res.status} ${res.statusText}` }
+  let json: GraphQLResponse
+  try {
+    json = JSON.parse(stdout) as GraphQLResponse
+  } catch {
+    return { ok: false, error: 'Failed to parse GitHub API response.' }
   }
-
-  const json = (await res.json()) as GraphQLResponse
 
   if (json.errors?.length) {
     return { ok: false, error: json.errors[0].message }
