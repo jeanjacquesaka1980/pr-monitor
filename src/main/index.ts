@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import { createTray } from './tray'
 import { registerIpcHandlers, isFloating } from './ipc-handlers'
+import { readPrefs, wasOpenedHidden } from './prefs'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -67,8 +68,14 @@ app.whenReady().then(() => {
   registerIpcHandlers(win, quit)
 
   const iconPath = path.join(__dirname, '../../assets/tray-icon.png')
-
   createTray(iconPath, quit)
+
+  // Show window on launch unless startMinimised is on or macOS opened it hidden
+  const prefs = readPrefs()
+  if (!prefs.startMinimised && !wasOpenedHidden()) {
+    const tray = BrowserWindow.getAllWindows()[0]
+    tray?.show()
+  }
 })
 
 app.on('window-all-closed', () => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ThemeProvider, BaseStyles, Box, Spinner, Text } from '@primer/react'
 import { useAuth } from './hooks/useAuth'
 import { usePRs } from './hooks/usePRs'
@@ -6,11 +6,13 @@ import { Header } from './components/Header'
 import { PRSection } from './components/PRSection'
 import { AuthGate } from './components/AuthGate'
 import { ErrorBanner } from './components/ErrorBanner'
+import { PreferencesPanel } from './components/Preferences'
 
 export function App(): React.ReactElement {
   const auth = useAuth()
   const isAuthenticated = auth.status === 'authenticated'
   const { data, error, loading, lastUpdated, refresh } = usePRs(isAuthenticated)
+  const [showPrefs, setShowPrefs] = useState(false)
 
   return (
     <ThemeProvider colorMode="dark" nightScheme="dark_dimmed">
@@ -30,17 +32,22 @@ export function App(): React.ReactElement {
             loading={loading}
             lastUpdated={lastUpdated}
             onRefresh={refresh}
+            onOpenPrefs={() => setShowPrefs(true)}
           />
 
-          {auth.status === 'unknown' && (
+          {showPrefs && (
+            <PreferencesPanel onClose={() => setShowPrefs(false)} />
+          )}
+
+          {!showPrefs && auth.status === 'unknown' && (
             <Box sx={{ display: 'flex', justifyContent: 'center', pt: 6 }}>
               <Spinner />
             </Box>
           )}
 
-          {auth.status === 'unauthenticated' && <AuthGate />}
+          {!showPrefs && auth.status === 'unauthenticated' && <AuthGate />}
 
-          {isAuthenticated && (
+          {!showPrefs && isAuthenticated && (
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
               {error && <ErrorBanner message={error} />}
 

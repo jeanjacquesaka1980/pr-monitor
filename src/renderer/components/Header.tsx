@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 import { Box, Text, IconButton, Tooltip, Spinner } from '@primer/react'
-import { SyncIcon, PinIcon, PinSlashIcon, XIcon } from '@primer/octicons-react'
+import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon } from '@primer/octicons-react'
 
 interface HeaderProps {
   username: string | undefined
   loading: boolean
   lastUpdated: Date | null
   onRefresh: () => void
+  onOpenPrefs: () => void
 }
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProps): React.ReactElement {
+export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
 
   const toggleFloat = (): void => {
@@ -78,6 +79,16 @@ export function Header({ username, loading, lastUpdated, onRefresh }: HeaderProp
               size="small"
               onClick={toggleFloat}
               sx={{ color: floating ? 'accent.fg' : 'fg.muted' }}
+            />
+          </Tooltip>
+          <Tooltip text="Preferences" direction="w">
+            <IconButton
+              icon={GearIcon}
+              aria-label="Preferences"
+              variant="invisible"
+              size="small"
+              onClick={onOpenPrefs}
+              sx={{ color: 'fg.muted' }}
             />
           </Tooltip>
           <Tooltip text="Quit PR Monitor" direction="w">

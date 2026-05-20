@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "node scripts/create-icons.js",
     "predev": "pkill -f 'pr-monitor' 2>/dev/null; lsof -ti:5173 | xargs kill -9 2>/dev/null; sleep 1; true",
+    "start": "node scripts/start.js",
     "dev": "tsc -p tsconfig.main.json && concurrently \"tsc -p tsconfig.main.json -w\" \"vite\" \"wait-on http://localhost:5173 && NODE_ENV=development electron .\"",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.main.json --noEmit"
   },
