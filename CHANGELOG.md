@@ -4,6 +4,23 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.7.0] - 2026-05-21
+
+### Added
+- **Homebrew distribution** — universal macOS `.zip` built with `electron-builder`; install via `brew install --cask jeanjacquesaka1980/tap/pr-monitor`
+- **Release Please CI** — GitHub Actions workflow automates changelog and version bumps on merge to `master`
+- Unresolved comments section added to the presentation/demo page with live prefs mock
+
+### Fixed
+- Unresolved comments column icons — replaced text labels with `HubotIcon` / `PersonIcon`, then swapped `HubotIcon` for `DependabotIcon` (square-headed robot) to better distinguish bots from humans
+- Comments nav link missing from the presentation page
+
+### Documentation
+- Homebrew tap listed as the primary installation method in README
+- Added Cmd+Space and Dock tips to README and presentation page
+
+---
+
 ## [1.6.0] - 2026-05-21
 
 ### Added
