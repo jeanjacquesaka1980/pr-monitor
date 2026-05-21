@@ -95,7 +95,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
               )}
             </Box>
           )}
-          {!showingPrefs && reviewingAuthors.length > 0 && (
+          {!showingPrefs && (
             <Box sx={{ position: 'relative' }}>
               <IconButton
                 ref={userFilterButtonRef}
