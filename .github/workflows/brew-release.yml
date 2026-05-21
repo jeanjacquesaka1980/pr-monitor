@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
 
       - name: Build universal zip
-        run: npm run dist
+        run: npm run predist && npx electron-builder --mac --universal --publish never
 
       - name: Collect build info
         id: info
