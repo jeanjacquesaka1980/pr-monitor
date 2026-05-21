@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PR Monitor — Every open PR, one click away</title>
+<style>
+  :root {
+    --bg: #22272e;
+    --surface: #2d333b;
+    --surface-2: #373e47;
+    --border: #444c56;
+    --text: #adbac7;
+    --text-muted: #768390;
+    --text-subtle: #636e7b;
+    --accent: #539bf5;
+    --green: #57ab5a;
+    --red: #e5534b;
+    --orange: #c69026;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: rgba(34, 39, 46, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .nav-logo svg { color: var(--text); }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    display: block;
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+  .nav-links a.active { color: var(--text); background: var(--surface-2); }
+
+  /* ── SECTIONS ── */
+  section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 32px;
+  }
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ── HERO ── */
+  #hero .section-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    padding-top: 52px;
+  }
+  .hero-copy h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #cdd9e5;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero-copy p {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 0 24px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .hero-mock {
+    display: flex;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .btn-accent { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+  .btn-accent:hover { opacity: 0.85; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { background: var(--surface); }
+
+  /* ── MOCK WINDOW ── */
+  .mock-window {
+    width: 380px;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.8);
+    overflow: hidden;
+    animation: float-in 0.6s cubic-bezier(0.16,1,0.3,1) both, float-loop 4s 0.6s ease-in-out infinite;
+    user-select: none;
+  }
+  @keyframes float-in {
+    from { opacity: 0; transform: scale(0.92) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0px); }
+  }
+  @keyframes float-loop {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  .mock-titlebar {
+    height: 28px;
+    background: #1c2128;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    cursor: default;
+  }
+  .traffic-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .traffic-dot:hover { opacity: 0.8; }
+  .dot-red    { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green  { background: #28c840; }
+
+  .mock-header {
+    background: #22272e;
+    border-bottom: 1px solid var(--border);
+    padding: 0 12px 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mock-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mock-header-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .mock-header-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .mock-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+  }
+  .mock-time {
+    font-size: 12px;
+    color: var(--text-subtle);
+    margin-right: 4px;
+  }
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: background 0.12s;
+  }
+  .icon-btn:hover { background: rgba(110,118,129,0.1); }
+  .icon-btn.active { color: var(--accent); }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  .mock-body {
+    background: var(--bg);
+    max-height: 380px;
+    overflow-y: auto;
+    position: relative;
+    transition: opacity 0.4s;
+  }
+  .mock-body.hidden { opacity: 0; }
+  .mock-body::-webkit-scrollbar { width: 4px; }
+  .mock-body::-webkit-scrollbar-track { background: transparent; }
+  .mock-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Section headers inside mock */
+  .mock-section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .mock-section-header:hover { background: #1c2128; }
+  .mock-section-chevron {
+    color: var(--text-muted);
+    font-size: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .mock-section-chevron.open { transform: rotate(90deg); }
+  .mock-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    flex: 1;
+  }
+  .mock-section-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 1px 6px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* Collapsible content */
+  .mock-collapsible {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  /* PR row — matches PRCard.tsx exactly */
+  .pr-row {
+    border-bottom: 1px solid #373e47;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: default;
+  }
+  .pr-row:last-child { border-bottom: none; }
+  .pr-row:hover { background: #2d333b; }
+
+  /* Top row: [expand-btn] [title block] [ext-link] */
+  .pr-row-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Single button holding chevron + PR icon */
+  .pr-expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    padding-top: 2px;
+    flex-shrink: 0;
+    color: #636e7b;
+  }
+  .pr-expand-btn .pr-chev { display: flex; align-items: center; color: #636e7b; transition: transform 0.2s; }
+  .pr-expand-btn .pr-chev.open { transform: rotate(90deg); }
+  .pr-expand-btn .pr-icon { display: flex; align-items: center; color: #57ab5a; }
+
+  /* Title block */
+  .pr-info { flex: 1; min-width: 0; }
+  .pr-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #adbac7;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pr-meta {
+    font-size: 12px;
+    color: #768390;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* Bottom row: avatar · user · dot · time · badges — pl:36px to align under title */
+  .pr-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 36px;
+  }
+  .pr-dot  { font-size: 12px; color: #636e7b; }
+  .pr-time { font-size: 12px; color: #768390; }
+  .pr-user { font-size: 12px; color: #768390; }
+
+  .avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .avatar-blue   { background: #4184e4; }
+  .avatar-purple { background: #8957e5; }
+  .avatar-green  { background: #57ab5a; }
+  .avatar-orange { background: #c69026; }
+
+  .pr-badges {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  /* Primer Label */
+  .label {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 20px;
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  .label-success   { background: rgba(87,171,90,0.15);   color: #57ab5a; border-color: rgba(87,171,90,0.3);   }
+  .label-danger    { background: rgba(229,83,75,0.15);   color: #e5534b; border-color: rgba(229,83,75,0.3);   }
+  .label-attention { background: rgba(198,144,38,0.15);  color: #c69026; border-color: rgba(198,144,38,0.3);  }
+  .label-secondary { background: rgba(110,118,129,0.15); color: #768390; border-color: rgba(110,118,129,0.3); }
+  .label svg { flex-shrink: 0; }
+  .ext-link {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    text-decoration: none;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+  }
+  .ext-link:hover { background: rgba(110,118,129,0.1); }
+
+  /* CI runs */
+  .ci-runs {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #1c2128;
+    border-top: 1px solid var(--border-muted);
+  }
+  .ci-workflow-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 6px 12px;
+  }
+  .ci-run-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #2d333b;
+  }
+  .ci-run-row:last-child { border-bottom: none; }
+  .ci-run-icon { display: flex; align-items: center; flex-shrink: 0; }
+  .ci-run-name {
+    font-size: 12px;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ci-run-status {
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ci-run-status.running { color: var(--orange); }
+  .ci-run-status.passed  { color: var(--green); }
+  .ci-run-status.failed  { color: var(--red); }
+  .ci-ext {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    display: flex; align-items: center;
+    width: 24px; height: 24px; justify-content: center;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  .ci-ext:hover { background: rgba(110,118,129,0.1); }
+
+  /* CSS Spinner — matches Primer Spinner */
+  .ci-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(198,144,38,0.3);
+    border-top-color: #c69026;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Filter dropdown in mock */
+  .filter-dropdown {
+    display: none;
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 50;
+    padding: 8px 0;
+    margin: 4px;
+  }
+  .filter-dropdown.open { display: block; }
+  .filter-dropdown-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    padding: 4px 12px 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .filter-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .filter-checkbox-row:hover { background: var(--surface-2); }
+  .filter-checkbox-row input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 13px;
+    height: 13px;
+    cursor: pointer;
+  }
+
+  /* Preferences panel */
+  .pref-panel {
+    display: none;
+    padding: 12px;
+  }
+  .pref-panel.open { display: block; }
+  .pref-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pref-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .pref-row:last-child { border-bottom: none; }
+  .toggle {
+    width: 32px;
+    height: 18px;
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .toggle.on  { background: var(--accent); }
+  .toggle.off { background: var(--text-subtle); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle.on::after  { left: 16px; }
+  .toggle.off::after { left: 2px; }
+
+  /* ── 2-COL LAYOUTS ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    width: 100%;
+  }
+  .two-col.reverse { direction: rtl; }
+  .two-col.reverse > * { direction: ltr; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 12px;
+  }
+  .section-heading {
+    font-size: 28px;
+    font-weight: 700;
+    color: #cdd9e5;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .section-body {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .section-note {
+    font-size: 13px;
+    color: var(--text-subtle);
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-left: 3px solid var(--border);
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* ── INTRO QUOTE ── */
+  .intro-quote {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 48px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    position: relative;
+  }
+  .intro-quote-mark {
+    color: var(--accent);
+    opacity: 0.4;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .intro-quote blockquote {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #cdd9e5;
+    font-style: italic;
+    margin: 0 0 20px;
+  }
+  .intro-quote-attr {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ── DESIGN SECTION ── */
+  .palette-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .palette-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .swatch-color {
+    height: 48px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .swatch-label {
+    font-size: 10px;
+    color: var(--text-subtle);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    line-height: 1.4;
+  }
+  .swatch-label strong { display: block; color: var(--text-muted); font-weight: 500; font-size: 9px; }
+  .palette-caption {
+    font-size: 11px;
+    color: var(--text-subtle);
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── WINDOW SECTION ── */
+  .traffic-showcase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .traffic-lights-big {
+    display: flex;
+    gap: 12px;
+    position: relative;
+  }
+  .tl-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+  }
+  .tl-red    { background: #ff5f57; }
+  .tl-yellow { background: #febc2e; }
+  .tl-green  { background: #28c840; }
+  .tl-annotations {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+    width: 100%;
+  }
+  .tl-annotation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .tl-dot-sm {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .tl-line {
+    width: 16px;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── SECTIONS SECTION ── */
+  .section-headers-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .demo-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+    position: relative;
+  }
+  .demo-section-header:last-child { border-bottom: none; }
+  .demo-chev { font-size: 10px; color: var(--text-subtle); }
+  .demo-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    flex: 1;
+  }
+  .demo-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+  }
+  .demo-section-header.highlight {
+    animation: sweep-highlight 4s ease-in-out infinite;
+  }
+  .demo-section-header:nth-child(2).highlight {
+    animation-delay: 2s;
+  }
+  @keyframes sweep-highlight {
+    0%, 40%, 100% { background: transparent; }
+    10%, 30%      { background: var(--surface-2); }
+  }
+
+  /* ── CI SECTION ── */
+  .ci-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .ci-card-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-subtle);
+    font-style: italic;
+  }
+
+  /* ── FILTER SECTION ── */
+  .filter-standalone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .filter-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .filter-icon-accent { color: var(--accent); }
+  .filter-cb-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-cb-row:last-child { border-bottom: none; }
+  .filter-cb-row.dimmed { opacity: 0.35; }
+  .filter-cb-row input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 13px;
+    height: 13px;
+  }
+  .filter-visual-group { display: flex; flex-direction: column; gap: 12px; }
+  .filter-demo-prs {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .mini-pr-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .mini-pr-row:last-child { border-bottom: none; }
+  .mini-pr-row.faded { opacity: 0.3; }
+
+  /* ── PREFERENCES SECTION ── */
+  .pref-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .pref-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pref-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .pref-card-row:last-child { border-bottom: none; }
+
+  /* ── INSTALL SECTION ── */
+  #install .section-inner {
+    max-width: 640px;
+    text-align: center;
+  }
+  #install .section-heading { font-size: 32px; }
+  .install-sub {
+    font-size: 15px;
+    color: var(--text-subtle);
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+  .terminal-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    margin-bottom: 28px;
+  }
+  .terminal-block {
+    background: #1c2128;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .terminal-comment { color: var(--text-subtle); }
+  .terminal-cmd    { color: #cdd9e5; }
+  .install-footer {
+    font-size: 14px;
+    color: var(--text-subtle);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+
+  /* ── REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── SVG ICONS ── */
+  .ghost-icon { display: inline-flex; color: var(--text-muted); }
+  .pr-open-icon { color: var(--green); }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; gap: 40px; }
+    .two-col.reverse { direction: ltr; }
+    #hero .section-inner { grid-template-columns: 1fr; gap: 40px; }
+    nav .nav-links { display: none; }
+    .mock-window { width: 100%; max-width: 380px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <svg width="16" height="16" viewBox="0 0 100 100">
+      <path d="M 15 48 A 35 35 0 0 1 85 48 L 85 78 Q 73 88 62 78 Q 50 88 38 78 Q 27 88 15 78 Z" fill="currentColor"/>
+      <ellipse cx="36" cy="42" rx="5.5" ry="6.5" fill="#1c2128"/>
+      <ellipse cx="64" cy="42" rx="5.5" ry="6.5" fill="#1c2128"/>
+      <path d="M 33 58 L 67 58 Q 50 72 33 58 Z" fill="#1c2128"/>
+      <ellipse cx="50" cy="68" rx="7" ry="5.5" fill="#ff7b7b"/>
+    </svg>
+    PR Monitor
+  </a>
+  <ul class="nav-links">
+    <li><a href="#design">Design</a></li>
+    <li><a href="#window">Window</a></li>
+    <li><a href="#sections">Sections</a></li>
+    <li><a href="#ci">CI</a></li>
+    <li><a href="#filter">Filter</a></li>
+    <li><a href="#preferences">Preferences</a></li>
+    <li><a href="#install">Install</a></li>
+  </ul>
+</nav>
+
+<!-- ══ INTRO QUOTE ══ -->
+<section id="intro">
+  <div class="section-inner">
+    <div class="intro-quote reveal">
+      <svg class="intro-quote-mark" width="32" height="32" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+        <path d="M10 8C5.6 8 2 11.6 2 16v8h8v-8H6c0-2.2 1.8-4 4-4V8zm14 0c-4.4 0-8 3.6-8 16v8h8v-8h-4c0-2.2 1.8-4 4-4V8z"/>
+      </svg>
+      <blockquote>
+        As a tester, you can't afford to miss a thing. Every pull request that slips through unreviewed, every CI job that silently fails — those are the cracks that become incidents. PR Monitor keeps the full picture in your peripheral vision, always. One glance at the menu bar and you know whether the team's work is green or on fire.
+      </blockquote>
+      <div class="intro-quote-attr">Built for engineers who need to know — right now.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="section-inner">
+    <!-- Hero copy -->
+    <div class="hero-copy reveal">
+      <h1>Every open PR, one click away</h1>
+      <p>A macOS menu bar app that keeps your GitHub pull requests in view — with live CI status, review decisions, and per-job check runs.</p>
+      <div class="btn-row">
+        <a href="https://github.com/jeanjacquesaka1980/pr-monitor" target="_blank" class="btn btn-accent">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.26-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#install" class="btn btn-outline">Read the docs</a>
+      </div>
+    </div>
+    <!-- Mock window -->
+    <div class="hero-mock reveal reveal-delay-1">
+    <div class="mock-window" id="mockWindow">
+      <!-- Titlebar -->
+      <div class="mock-titlebar">
+        <div class="traffic-dot dot-red"   id="dotRed"   title="Hide window"></div>
+        <div class="traffic-dot dot-yellow" title="Minimize"></div>
+        <div class="traffic-dot dot-green"  title="Zoom"></div>
+      </div>
+
+      <!-- App header -->
+      <div class="mock-header">
+        <div class="mock-header-left">
+          <svg width="18" height="18" viewBox="0 0 100 100" style="color:#adbac7;flex-shrink:0;">
+            <path d="M 15 48 A 35 35 0 0 1 85 48 L 85 78 Q 73 88 62 78 Q 50 88 38 78 Q 27 88 15 78 Z" fill="currentColor"/>
+            <ellipse cx="36" cy="42" rx="5.5" ry="6.5" fill="#22272e"/>
+            <ellipse cx="64" cy="42" rx="5.5" ry="6.5" fill="#22272e"/>
+            <path d="M 33 58 L 67 58 Q 50 72 33 58 Z" fill="#22272e"/>
+            <ellipse cx="50" cy="68" rx="7" ry="5.5" fill="#ff7b7b"/>
+          </svg>
+          <span class="mock-header-title">PR Monitor</span>
+          <span class="mock-header-sub">@jeanjacquesaka1980</span>
+        </div>
+        <div class="mock-header-right">
+          <span class="mock-time">14:32</span>
+          <button class="icon-btn" id="btnFilter" title="Filter">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M.75 3h14.5a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1 0-1.5ZM3 7.75A.75.75 0 0 1 3.75 7h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 3 7.75Zm3 4a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"/></svg>
+          </button>
+          <button class="icon-btn" title="Refresh">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z"/></svg>
+          </button>
+          <button class="icon-btn" title="Pin">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4.456.734a1.75 1.75 0 0 1 2.826.504l.613 1.327a3.081 3.081 0 0 0 2.084 1.707l2.454.584c1.332.317 1.8 1.972.806 2.965l-1.578 1.578-.590 3.947a1.75 1.75 0 0 1-2.828 1.097L7 13.429l-1.843 1.009a1.75 1.75 0 0 1-2.828-1.097l-.59-3.947-1.578-1.578c-.993-.993-.526-2.648.806-2.965l2.454-.584a3.081 3.081 0 0 0 2.084-1.707l.613-1.327a1.75 1.75 0 0 1-.662-.519Z"/></svg>
+          </button>
+          <button class="icon-btn" id="btnGear" title="Preferences">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294.016.257.016.515 0 .772-.01.147.038.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.05-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.038-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.71.645 7.257.095 8 .031 8.234.01 8.117 0 8 0Zm-.571 6.5a1.5 1.5 0 1 0 1.143 2.75A1.5 1.5 0 0 0 7.43 6.5ZM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z"/></svg>
+          </button>
+          <button class="icon-btn" title="Close"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Filter dropdown -->
+      <div style="position:relative;">
+        <div class="filter-dropdown" id="filterDropdown">
+          <div class="filter-dropdown-title">Filter by repository</div>
+          <label class="filter-checkbox-row"><input type="checkbox" checked id="fcFrontend"> acme-corp/frontend</label>
+          <label class="filter-checkbox-row"><input type="checkbox" checked id="fcApi"> acme-corp/api</label>
+          <label class="filter-checkbox-row"><input type="checkbox" checked id="fcBackend"> acme-corp/backend</label>
+        </div>
+      </div>
+
+      <!-- Mock body -->
+      <div class="mock-body" id="mockBody">
+        <!-- Preferences panel (hidden by default) -->
+        <div class="pref-panel" id="prefPanel">
+          <div class="pref-title">Preferences</div>
+          <div class="pref-row">
+            <div>
+              <div style="font-size:13px;color:#adbac7;margin-bottom:3px;">Launch at login</div>
+              <div style="font-size:11px;color:#768390;">Start PR Monitor automatically when you log in</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div>
+          </div>
+          <div class="pref-row">
+            <div>
+              <div style="font-size:13px;color:#adbac7;margin-bottom:3px;">Start minimised</div>
+              <div style="font-size:11px;color:#768390;">Hide the window on launch — access via the menu bar icon</div>
+            </div>
+            <div class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div>
+          </div>
+          <button onclick="document.getElementById('btnGear').click()" style="margin-top:12px;background:none;border:none;cursor:pointer;font-size:12px;color:#768390;padding:0;">← Back</button>
+        </div>
+
+        <!-- Section: YOUR PRs -->
+        <div class="mock-section-header" id="sectionYours" onclick="toggleSection('yours')">
+          <span class="mock-section-chevron open" id="chevYours">›</span>
+          <span class="mock-section-title">Your PRs</span>
+          <span class="mock-section-badge">2</span>
+        </div>
+        <div class="mock-collapsible" id="collapseYours" style="max-height:600px;">
+          <!-- PR 1: expanded with CI runs -->
+          <div style="border-bottom:1px solid #373e47;">
+            <div class="pr-row">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" onclick="toggleCi('ci1','chev1')">
+                  <span class="pr-chev open" id="chev1"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"/></svg></span>
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">feat: add dark mode support</span>
+                  <span class="pr-meta">acme-corp/frontend #142</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-blue">J</div>
+                <span class="pr-user">jeanjacquesaka1980</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">2h ago</span>
+                <div class="pr-badges">
+                  <span class="label label-success"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg>Passing</span>
+                  <span class="label label-success"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg>Approved</span>
+                </div>
+              </div>
+            </div>
+            <div class="ci-runs" id="ci1" style="max-height:300px;overflow:visible;">
+              <div class="ci-workflow-label">CodeQL</div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon"><div class="ci-spinner"></div></span>
+                <span class="ci-run-name">Analyze (javascript-typescript)</span>
+                <span class="ci-run-status running">Running</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-workflow-label">CI</div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon" style="color:#57ab5a"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg></span>
+                <span class="ci-run-name">build</span><span class="ci-run-status passed">Passed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon" style="color:#57ab5a"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg></span>
+                <span class="ci-run-name">test</span><span class="ci-run-status passed">Passed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-run-row" style="border-bottom:none;">
+                <span class="ci-run-icon" style="color:#e5534b"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"/></svg></span>
+                <span class="ci-run-name">lint</span><span class="ci-run-status failed">Failed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+            </div>
+          </div>
+          <!-- PR 2: collapsed -->
+          <div>
+            <div class="pr-row">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" onclick="toggleCi('ci2','chev2')">
+                  <span class="pr-chev" id="chev2"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/></svg></span>
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">fix: timeout in background worker</span>
+                  <span class="pr-meta">acme-corp/api #89</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-blue">J</div>
+                <span class="pr-user">jeanjacquesaka1980</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">1d ago</span>
+                <div class="pr-badges">
+                  <span class="label label-danger"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"/></svg>Failing</span>
+                  <span class="label label-danger"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.75 1h10.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 15H2.75A1.75 1.75 0 0 1 1 13.25V2.75C1 1.784 1.784 1 2.75 1Zm10.5 1.5H2.75a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25ZM8 4a.75.75 0 0 1 .75.75V6.5h1.75a.75.75 0 0 1 0 1.5H8.75V9.75a.75.75 0 0 1-1.5 0V8H5.5a.75.75 0 0 1 0-1.5h1.75V4.75A.75.75 0 0 1 8 4Zm0 7.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>Changes</span>
+                </div>
+              </div>
+            </div>
+            <div class="ci-runs" id="ci2" style="max-height:0;overflow:hidden;"></div>
+          </div>
+        </div>
+
+        <!-- Section: OTHERS' PRs -->
+        <div class="mock-section-header" id="sectionOthers" onclick="toggleSection('others')">
+          <span class="mock-section-chevron open" id="chevOthers">›</span>
+          <span class="mock-section-title">Others' PRs</span>
+          <span class="mock-section-badge">3</span>
+        </div>
+        <div class="mock-collapsible" id="collapseOthers" style="max-height:500px;">
+          <!-- PR 3 -->
+          <div>
+            <div class="pr-row">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" style="cursor:default;">
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">chore: upgrade dependencies</span>
+                  <span class="pr-meta">acme-corp/frontend #143</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-purple">A</div>
+                <span class="pr-user">alice</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">45m ago</span>
+                <div class="pr-badges">
+                  <span class="label label-attention"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/></svg>Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PR 4 -->
+          <div>
+            <div class="pr-row">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" style="cursor:default;">
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">docs: add rate limit docs</span>
+                  <span class="pr-meta">acme-corp/api #91</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-green">B</div>
+                <span class="pr-user">bob</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">3h ago</span>
+                <div class="pr-badges">
+                  <span class="label label-success"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg>Passing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PR 5 -->
+          <div>
+            <div class="pr-row" style="border-bottom:none;">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" style="cursor:default;">
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">refactor: split auth module</span>
+                  <span class="pr-meta">acme-corp/backend #22</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-orange">C</div>
+                <span class="pr-user">carol</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">2d ago</span>
+                <div class="pr-badges">
+                  <span class="label label-secondary"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"/></svg>No CI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /mock-body -->
+    </div><!-- /mock-window -->
+    </div><!-- /hero-mock -->
+  </div>
+</section>
+
+<!-- ══ DESIGN ══ -->
+<section id="design">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">Design</div>
+        <h2 class="section-heading">Looks and feels like GitHub</h2>
+        <p class="section-body">Built with GitHub's own Primer design system — the exact same colors, typography, and components you see on github.com. There's no jarring context switch between the app and the site.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="palette-card">
+          <div class="palette-grid">
+            <div class="swatch">
+              <div class="swatch-color" style="background:#22272e;"></div>
+              <div class="swatch-label">canvas.default<strong>#22272e</strong></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#2d333b;"></div>
+              <div class="swatch-label">canvas.subtle<strong>#2d333b</strong></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#adbac7;"></div>
+              <div class="swatch-label">fg.default<strong>#adbac7</strong></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#768390;"></div>
+              <div class="swatch-label">fg.muted<strong>#768390</strong></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#539bf5;"></div>
+              <div class="swatch-label">accent.fg<strong>#539bf5</strong></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#57ab5a;"></div>
+              <div class="swatch-label">success.fg<strong>#57ab5a</strong></div>
+            </div>
+          </div>
+          <div class="palette-caption">GitHub Primer dark_dimmed tokens</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WINDOW ══ -->
+<section id="window">
+  <div class="section-inner">
+    <div class="two-col reverse">
+      <div class="reveal">
+        <div class="section-label">Window</div>
+        <h2 class="section-heading">macOS-native from the first pixel</h2>
+        <p class="section-body">The window lives in your menu bar — click the icon to show or hide it. The red button hides the panel without quitting; the app keeps running and polling in the background. Pin the window to keep it on top while you work.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="traffic-showcase">
+          <div class="traffic-lights-big">
+            <div class="tl-dot tl-red"></div>
+            <div class="tl-dot tl-yellow"></div>
+            <div class="tl-dot tl-green"></div>
+          </div>
+          <div class="tl-annotations">
+            <div class="tl-annotation">
+              <div class="tl-dot-sm tl-red"></div>
+              <div class="tl-line"></div>
+              <span>Hides the window — app stays alive in the tray</span>
+            </div>
+            <div class="tl-annotation">
+              <div class="tl-dot-sm tl-yellow"></div>
+              <div class="tl-line"></div>
+              <span>Standard macOS minimize</span>
+            </div>
+            <div class="tl-annotation">
+              <div class="tl-dot-sm tl-green"></div>
+              <div class="tl-line"></div>
+              <span>Standard macOS zoom</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTIONS ══ -->
+<section id="sections">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">Sections</div>
+        <h2 class="section-heading">Yours and theirs, at a glance</h2>
+        <p class="section-body">Your PRs shows everything you authored that's still open. Others' PRs shows every other open pull request in the repos you work in — not just the ones where your review was explicitly requested. You see the full team queue without having to open GitHub.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="section-headers-demo">
+          <div class="demo-section-header highlight" style="animation-delay:0s;">
+            <span class="demo-chev">∨</span>
+            <span class="demo-section-title">Your PRs</span>
+            <span class="demo-badge">2</span>
+          </div>
+          <div class="demo-section-header highlight" style="animation-delay:2s;">
+            <span class="demo-chev">∨</span>
+            <span class="demo-section-title">Others' PRs</span>
+            <span class="demo-badge">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CI ══ -->
+<section id="ci">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">CI</div>
+        <h2 class="section-heading">Every check run, grouped by workflow</h2>
+        <p class="section-body">Click the chevron on any PR to see all its CI jobs, grouped by workflow. Running jobs show a live spinner. Each job links directly to its run page — one click to see why it failed.</p>
+        <div class="section-note">Duplicate runs from re-opened PRs are automatically deduplicated — you always see only the latest run per job.</div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="ci-card">
+          <div class="ci-card-header">PR detail — feat: add dark mode support</div>
+          <!-- PR row -->
+          <div style="border-bottom:none;">
+            <div class="pr-row" style="background:var(--bg);">
+              <div class="pr-row-top">
+                <button class="pr-expand-btn" style="cursor:default;">
+                  <span class="pr-chev open"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"/></svg></span>
+                  <span class="pr-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg></span>
+                </button>
+                <div class="pr-info">
+                  <span class="pr-title">feat: add dark mode support</span>
+                  <span class="pr-meta">acme-corp/frontend #142</span>
+                </div>
+                <a href="#" class="ext-link" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="pr-footer">
+                <div class="avatar avatar-blue">J</div>
+                <span class="pr-user">jeanjacquesaka1980</span>
+                <span class="pr-dot">·</span>
+                <span class="pr-time">2h ago</span>
+                <div class="pr-badges">
+                  <span class="label label-success"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg>Passing</span>
+                </div>
+              </div>
+            </div>
+            <!-- CI runs always expanded in CI section -->
+            <div style="background:#1c2128;border-top:1px solid #444c56;">
+              <div class="ci-workflow-label">CodeQL</div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon"><div class="ci-spinner"></div></span>
+                <span class="ci-run-name">Analyze (javascript-typescript)</span>
+                <span class="ci-run-status running">Running</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-workflow-label">CI</div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon" style="color:#57ab5a"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg></span>
+                <span class="ci-run-name">build</span>
+                <span class="ci-run-status passed">Passed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon" style="color:#57ab5a"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg></span>
+                <span class="ci-run-name">test</span>
+                <span class="ci-run-status passed">Passed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+              <div class="ci-run-row">
+                <span class="ci-run-icon" style="color:#e5534b"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"/></svg></span>
+                <span class="ci-run-name">lint</span>
+                <span class="ci-run-status failed">Failed</span>
+                <a href="#" class="ci-ext" onclick="return false"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"/></svg></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FILTER ══ -->
+<section id="filter">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">Filter</div>
+        <h2 class="section-heading">Hide the noise, focus on what matters</h2>
+        <p class="section-body">The filter dropdown lets you choose which repos to show. Uncheck a repo and its PRs disappear from both sections instantly. The filter is saved to your preferences — it persists across restarts.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="filter-standalone">
+          <div class="filter-header-row">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" class="filter-icon-accent"><path d="M.75 3h14.5a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1 0-1.5ZM3 7.75A.75.75 0 0 1 3.75 7h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 3 7.75Zm3 4a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"/></svg>
+            Filter by repository
+          </div>
+          <label class="filter-cb-row"><input type="checkbox" checked onclick="return false"> acme-corp/frontend</label>
+          <label class="filter-cb-row"><input type="checkbox" checked onclick="return false"> acme-corp/api</label>
+          <label class="filter-cb-row"><input type="checkbox" onclick="return false"> acme-corp/backend</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PREFERENCES ══ -->
+<section id="preferences">
+  <div class="section-inner">
+    <div class="two-col reverse">
+      <div class="reveal">
+        <div class="section-label">Preferences</div>
+        <h2 class="section-heading">Set it and forget it</h2>
+        <p class="section-body">Launch at login starts PR Monitor automatically when you log in — no need to remember to open it. Start minimised skips the window on launch; just the tray icon appears. Preferences are saved to <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">~/Library/Application Support/PR Monitor/</code>.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="pref-card">
+          <div class="pref-card-title">Preferences</div>
+          <div class="pref-card-row">
+            <span>Launch at login</span>
+            <div class="toggle on"></div>
+          </div>
+          <div class="pref-card-row">
+            <span>Start minimised</span>
+            <div class="toggle off"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INSTALL ══ -->
+<section id="install">
+  <div class="section-inner" style="text-align:center;max-width:640px;margin:0 auto;">
+    <div class="reveal">
+      <div class="section-label">Get Started</div>
+      <h2 class="section-heading" style="font-size:32px;">Three commands. That's it.</h2>
+      <p class="install-sub">No Xcode. No certificates. No App Store.</p>
+    </div>
+    <div class="terminal-blocks">
+      <div class="terminal-block reveal reveal-delay-1"><span class="terminal-comment"># 1. Install GitHub CLI and authenticate</span>
+<span class="terminal-cmd">brew install gh && gh auth login</span></div>
+      <div class="terminal-block reveal reveal-delay-2"><span class="terminal-comment"># 2. Clone the repo</span>
+<span class="terminal-cmd">git clone https://github.com/jeanjacquesaka1980/pr-monitor.git
+cd pr-monitor</span></div>
+      <div class="terminal-block reveal reveal-delay-3"><span class="terminal-comment"># 3. Install and launch</span>
+<span class="terminal-cmd">npm install && npm run start</span></div>
+    </div>
+    <p class="install-footer reveal reveal-delay-4">The ghost icon appears in your menu bar. That's it.</p>
+    <div class="reveal reveal-delay-4">
+      <a href="https://github.com/jeanjacquesaka1980/pr-monitor" target="_blank" class="btn btn-accent" style="display:inline-flex;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.26-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        View on GitHub &rarr;
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── MOCK INTERACTIVITY ──
+
+  // Red dot: hide/show mock body
+  var mockBody = document.getElementById('mockBody');
+  var prefPanel = document.getElementById('prefPanel');
+  document.getElementById('dotRed').addEventListener('click', function() {
+    mockBody.classList.add('hidden');
+    setTimeout(function() { mockBody.classList.remove('hidden'); }, 600);
+  });
+
+  // Section collapse/expand
+  function toggleSection(which) {
+    var collapse = document.getElementById('collapse' + (which === 'yours' ? 'Yours' : 'Others'));
+    var chev = document.getElementById('chev' + (which === 'yours' ? 'Yours' : 'Others'));
+    if (collapse.style.maxHeight && parseInt(collapse.style.maxHeight) > 0) {
+      collapse.style.maxHeight = '0px';
+      collapse.style.overflow = 'hidden';
+      chev.classList.remove('open');
+    } else {
+      collapse.style.maxHeight = '500px';
+      chev.classList.add('open');
+    }
+  }
+
+  // CI expand/collapse
+  function toggleCi(ciId, chevId) {
+    var ci = document.getElementById(ciId);
+    var chev = document.getElementById(chevId);
+    if (ci.style.maxHeight && parseInt(ci.style.maxHeight) > 0) {
+      ci.style.maxHeight = '0px';
+      ci.style.overflow = 'hidden';
+      chev.classList.remove('open');
+    } else {
+      ci.style.maxHeight = '200px';
+      ci.style.overflow = 'visible';
+      chev.classList.add('open');
+    }
+  }
+
+  // Filter dropdown
+  var filterDropdown = document.getElementById('filterDropdown');
+  var btnFilter = document.getElementById('btnFilter');
+  btnFilter.addEventListener('click', function(e) {
+    e.stopPropagation();
+    filterDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function() {
+    filterDropdown.classList.remove('open');
+  });
+  filterDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+
+  // Filter checkbox color update
+  var filterCheckboxes = filterDropdown.querySelectorAll('input[type="checkbox"]');
+  function updateFilterIcon() {
+    var anyUnchecked = false;
+    filterCheckboxes.forEach(function(cb) { if (!cb.checked) anyUnchecked = true; });
+    btnFilter.classList.toggle('active', anyUnchecked);
+  }
+  filterCheckboxes.forEach(function(cb) { cb.addEventListener('change', updateFilterIcon); });
+
+  // Gear: preferences panel
+  var btnGear = document.getElementById('btnGear');
+  var prSections = mockBody.querySelectorAll('.mock-section-header, .mock-collapsible');
+  var prefOpen = false;
+  btnGear.addEventListener('click', function() {
+    prefOpen = !prefOpen;
+    prefPanel.classList.toggle('open', prefOpen);
+    btnGear.classList.toggle('active', prefOpen);
+    prSections.forEach(function(el) { el.style.display = prefOpen ? 'none' : ''; });
+  });
+
+  // ── SCROLL HIGHLIGHT NAV ──
+  var navLinks = document.querySelectorAll('.nav-links a');
+  var sectionIds = ['hero','design','window','sections','ci','filter','preferences','install'];
+  var sectionEls = sectionIds.map(function(id) { return document.getElementById(id); });
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        navLinks.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sectionEls.forEach(function(el) { if (el) observer.observe(el); });
+
+  // ── SCROLL REVEAL ──
+  var revealEls = document.querySelectorAll('.reveal');
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  revealEls.forEach(function(el) { revealObserver.observe(el); });
+</script>
+</body>
+</html>
