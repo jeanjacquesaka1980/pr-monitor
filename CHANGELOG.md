@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.7.2] - 2026-05-21
+
+### Added
+- Tray tooltip now shows the running version (e.g. "PR Monitor v1.7.2")
+
+---
+
 ## [1.7.1] - 2026-05-21
 
 ### Security

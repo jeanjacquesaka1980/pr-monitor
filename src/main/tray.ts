@@ -1,4 +1,4 @@
-import { Tray, BrowserWindow, nativeImage, screen, Menu } from 'electron'
+import { app, Tray, BrowserWindow, nativeImage, screen, Menu } from 'electron'
 
 let tray: Tray | null = null
 
@@ -26,7 +26,7 @@ function positionWindow(win: BrowserWindow): void {
 export function createTray(iconPath: string, onQuit: () => void): Tray {
   const icon = nativeImage.createFromPath(iconPath)
   tray = new Tray(icon.resize({ width: 18, height: 18 }))
-  tray.setToolTip('PR Monitor')
+  tray.setToolTip(`PR Monitor v${app.getVersion()}`)
 
   tray.on('click', () => {
     const win = getWindow()
