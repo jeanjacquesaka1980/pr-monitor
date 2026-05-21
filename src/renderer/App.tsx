@@ -17,6 +17,7 @@ export function App(): React.ReactElement {
   const [showPrefs, setShowPrefs] = useState(false)
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
   const [watchedUsers, setWatchedUsers] = useState<string[]>([])
+  const [showUnresolvedComments, setShowUnresolvedComments] = useState(false)
   // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
   const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
 
@@ -27,6 +28,7 @@ export function App(): React.ReactElement {
         prefsRef.current = p
         setHiddenRepos(p.hiddenRepos ?? [])
         setWatchedUsers(p.watchedUsers ?? [])
+        setShowUnresolvedComments(p.showUnresolvedComments ?? false)
       })
       .catch(() => {})
   }, [])
@@ -110,7 +112,18 @@ export function App(): React.ReactElement {
           />
 
           {showPrefs && (
-            <PreferencesPanel onClose={() => setShowPrefs(false)} />
+            <PreferencesPanel onClose={() => {
+              setShowPrefs(false)
+              // Re-sync derived state from prefs in case user changed toggles
+              window.api.getPrefs()
+                .then((p) => {
+                  prefsRef.current = p
+                  setHiddenRepos(p.hiddenRepos ?? [])
+                  setWatchedUsers(p.watchedUsers ?? [])
+                  setShowUnresolvedComments(p.showUnresolvedComments ?? false)
+                })
+                .catch(() => {})
+            }} />
           )}
 
           {!showPrefs && auth.status === 'unknown' && (
@@ -142,11 +155,13 @@ export function App(): React.ReactElement {
                     title="Your PRs"
                     prs={filterPRs(data.authored)}
                     emptyMessage="No open PRs authored by you"
+                    showUnresolvedComments={showUnresolvedComments}
                   />
                   <PRSection
                     title="Others' PRs"
                     prs={filterReviewing(data.reviewing)}
                     emptyMessage={watchedUsers.length === 0 ? 'Select authors to see their PRs' : 'No open PRs from watched authors'}
+                    showUnresolvedComments={showUnresolvedComments}
                   />
                 </>
               )}

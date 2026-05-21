@@ -43,6 +43,11 @@ export type ReviewDecision =
   | 'REVIEW_REQUIRED'
   | null
 
+export interface UnresolvedComments {
+  bots: number
+  humans: number
+}
+
 export interface PullRequest {
   id: string
   number: number
@@ -55,6 +60,7 @@ export interface PullRequest {
   reviewDecision: ReviewDecision
   ciState: CIState
   checkRuns: CheckRun[]
+  unresolvedComments: UnresolvedComments
 }
 
 export interface PRData {
@@ -86,4 +92,5 @@ export interface Preferences {
   startMinimised: boolean
   hiddenRepos: string[]
   watchedUsers: string[]
+  showUnresolvedComments: boolean
 }
