@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.7.1] - 2026-05-21
+
+### Security
+- Added explicit `permissions: contents: read` to the typecheck workflow — removes reliance on permissive defaults and satisfies GitHub code scanning alert #3
+
+---
+
 ## [1.7.0] - 2026-05-21
 
 ### Added
