@@ -65,7 +65,7 @@ body {
 .diagram {
   position: relative;
   width: 900px;
-  height: 1150px;
+  height: 1400px;
   margin: 0 auto;
 }
 
@@ -74,7 +74,7 @@ body {
   position: absolute;
   top: 0; left: 0;
   width: 900px;
-  height: 1150px;
+  height: 1400px;
   pointer-events: none;
   overflow: visible;
 }
@@ -249,49 +249,47 @@ body {
   <!-- ── SVG ARROWS ── -->
   <svg aria-hidden="true">
     <defs>
-      <!-- standard arrowhead -->
       <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
         <polygon points="0 0, 8 3, 0 6" fill="#484f58"/>
       </marker>
-      <!-- purple dashed arrowhead for loop -->
       <marker id="arr-p" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
         <polygon points="0 0, 8 3, 0 6" fill="#a371f7"/>
       </marker>
     </defs>
 
-    <!-- trigger → role (fan left) -->
-    <path d="M 450 90 C 450 115 125 115 125 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-    <!-- trigger → tool (straight) -->
-    <path d="M 450 90 L 450 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-    <!-- trigger → philosophy (fan right) -->
-    <path d="M 450 90 C 450 115 775 115 775 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- trigger → role -->
+    <path d="M 450 90 C 450 135 125 135 125 180" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- trigger → tool -->
+    <path d="M 450 90 L 450 180" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- trigger → philosophy -->
+    <path d="M 450 90 C 450 135 775 135 775 180" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
     <!-- role → stack -->
-    <path d="M 125 240 C 125 265 235 265 235 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-    <!-- tool → stack (straight) -->
-    <path d="M 450 240 L 450 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 125 280 C 125 325 235 325 235 370" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- tool → stack -->
+    <path d="M 450 280 L 450 370" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
     <!-- philosophy → stack -->
-    <path d="M 775 240 C 775 265 665 265 665 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 775 280 C 775 325 665 325 665 370" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
     <!-- stack → guardrails -->
-    <path d="M 450 400 L 450 450" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 450 480 L 450 570" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
     <!-- guardrails → devloop -->
-    <path d="M 450 590 L 450 640" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 450 710 L 450 800" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
     <!-- devloop → design -->
-    <path d="M 260 810 C 260 840 200 840 200 860" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 260 970 C 260 1015 200 1015 200 1060" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
     <!-- devloop → bugs -->
-    <path d="M 640 810 C 640 840 700 840 700 860" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 640 970 C 640 1015 695 1015 695 1060" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
     <!-- design → result -->
-    <path d="M 200 970 C 200 998 355 998 355 1020" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 200 1170 C 200 1215 355 1215 355 1260" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
     <!-- bugs → result -->
-    <path d="M 700 970 C 700 998 545 998 545 1020" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <path d="M 695 1170 C 695 1215 545 1215 545 1260" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
-    <!-- ↺ loop-back (right side of devloop, dashed purple) -->
-    <path d="M 822 780 C 868 780 868 650 822 650" stroke="#a371f7" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-p)"/>
-    <text x="878" y="718" fill="#6e7681" font-size="11" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" text-anchor="middle">↺ repeat</text>
+    <!-- ↺ loop-back -->
+    <path d="M 822 955 C 868 955 868 815 822 815" stroke="#a371f7" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-p)"/>
+    <text x="880" y="888" fill="#6e7681" font-size="11" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" text-anchor="middle">↺ repeat</text>
   </svg>
 
   <!-- ── NODES ── -->
@@ -306,7 +304,7 @@ body {
   </div>
 
   <!-- MY ROLE -->
-  <div class="node a-orange" style="left:0;top:140px;width:250px;">
+  <div class="node a-orange" style="left:0;top:180px;width:250px;">
     <div class="node-label">
       <span class="dot dot-orange"></span>
       My Role
@@ -315,7 +313,7 @@ body {
   </div>
 
   <!-- CLAUDE CODE -->
-  <div class="node a-blue" style="left:325px;top:140px;width:250px;">
+  <div class="node a-blue" style="left:325px;top:180px;width:250px;">
     <div class="node-label">
       <span class="dot dot-blue"></span>
       Claude Code
@@ -324,7 +322,7 @@ body {
   </div>
 
   <!-- THE GOAL -->
-  <div class="node a-purple" style="left:650px;top:140px;width:250px;">
+  <div class="node a-purple" style="left:650px;top:180px;width:250px;">
     <div class="node-label">
       <span class="dot dot-purple"></span>
       The Goal
@@ -333,7 +331,7 @@ body {
   </div>
 
   <!-- STACK -->
-  <div class="node a-blue" style="left:175px;top:290px;width:550px;">
+  <div class="node a-blue" style="left:175px;top:370px;width:550px;">
     <div class="node-label">
       <span class="dot dot-blue"></span>
       Stack — Suggested by Claude
@@ -350,7 +348,7 @@ body {
   </div>
 
   <!-- GUARDRAILS -->
-  <div class="node a-orange" style="left:75px;top:450px;width:750px;">
+  <div class="node a-orange" style="left:75px;top:570px;width:750px;">
     <div class="node-label">
       <span class="dot dot-orange"></span>
       Guardrails &amp; Boundaries
@@ -376,7 +374,7 @@ body {
   </div>
 
   <!-- DEV LOOP -->
-  <div class="node a-purple" style="left:75px;top:640px;width:750px;">
+  <div class="node a-purple" style="left:75px;top:800px;width:750px;">
     <div class="node-label">
       <span class="dot dot-purple"></span>
       Development Loop — One Small Piece at a Time
@@ -394,7 +392,7 @@ body {
   </div>
 
   <!-- DESIGN ITERATIONS -->
-  <div class="node a-green" style="left:50px;top:860px;width:310px;">
+  <div class="node a-green" style="left:50px;top:1060px;width:310px;">
     <div class="node-label">
       <span class="dot dot-green"></span>
       Design Iterations
@@ -403,7 +401,7 @@ body {
   </div>
 
   <!-- BUG FIXES -->
-  <div class="node a-yellow" style="left:540px;top:860px;width:310px;">
+  <div class="node a-yellow" style="left:540px;top:1060px;width:310px;">
     <div class="node-label">
       <span class="dot dot-yellow"></span>
       Bug Fixes
@@ -412,7 +410,7 @@ body {
   </div>
 
   <!-- RESULT -->
-  <div class="node a-green node-result" style="left:250px;top:1020px;width:400px;">
+  <div class="node a-green node-result" style="left:250px;top:1260px;width:400px;">
     <div class="node-label">
       <span class="dot dot-green"></span>
       PR Monitor&nbsp;
