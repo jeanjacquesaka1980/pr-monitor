@@ -40,7 +40,7 @@ jobs:
           echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Upload zip to release
-        run: gh release upload "${{ github.event.release.tag_name || inputs.tag }}" "${{ steps.info.outputs.zip }}"
+        run: gh release upload "${{ github.event.release.tag_name || inputs.tag }}" "${{ steps.info.outputs.zip }}" --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
