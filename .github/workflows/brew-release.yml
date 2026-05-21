@@ -1,0 +1,78 @@
+name: Build & publish Homebrew release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  brew-release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build universal zip
+        run: npm run dist
+
+      - name: Collect build info
+        id: info
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          ZIP="release/PR Monitor-${VERSION}-universal-mac.zip"
+          SHA=$(shasum -a 256 "${ZIP}" | awk '{print $1}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip=${ZIP}" >> "$GITHUB_OUTPUT"
+          echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload zip to release
+        run: gh release upload "${{ github.event.release.tag_name }}" "${{ steps.info.outputs.zip }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Homebrew tap
+        env:
+          GH_TOKEN: ${{ secrets.TAP_TOKEN }}
+          VERSION: ${{ steps.info.outputs.version }}
+          SHA256: ${{ steps.info.outputs.sha256 }}
+        run: |
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/jeanjacquesaka1980/homebrew-tap.git" /tmp/tap
+          cd /tmp/tap
+
+          cat > Casks/pr-monitor.rb <<'CASK'
+cask "pr-monitor" do
+  version "VERSION_PLACEHOLDER"
+  sha256 "SHA256_PLACEHOLDER"
+
+  url "https://github.com/jeanjacquesaka1980/pr-monitor/releases/download/v#{version}/PR.Monitor-#{version}-universal-mac.zip"
+  name "PR Monitor"
+  desc "GitHub pull request monitor for the macOS menu bar"
+  homepage "https://github.com/jeanjacquesaka1980/pr-monitor"
+
+  app "PR Monitor.app"
+
+  zap trash: [
+    "~/Library/Application Support/PR Monitor",
+    "~/Library/LaunchAgents/com.pr-monitor.app.plist",
+    "~/Library/Preferences/com.pr-monitor.app.plist",
+  ]
+end
+CASK
+
+          sed -i '' "s/VERSION_PLACEHOLDER/${VERSION}/g" Casks/pr-monitor.rb
+          sed -i '' "s/SHA256_PLACEHOLDER/${SHA256}/g" Casks/pr-monitor.rb
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add Casks/pr-monitor.rb
+          git commit -m "chore: bump pr-monitor to ${VERSION}"
+          git push
