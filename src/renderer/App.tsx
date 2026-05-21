@@ -7,6 +7,7 @@ import { PRSection } from './components/PRSection'
 import { AuthGate } from './components/AuthGate'
 import { ErrorBanner } from './components/ErrorBanner'
 import { PreferencesPanel } from './components/Preferences'
+import { RepoWarningBanner } from './components/RepoWarningBanner'
 
 export function App(): React.ReactElement {
   const auth = useAuth()
@@ -89,6 +90,10 @@ export function App(): React.ReactElement {
           {!showPrefs && isAuthenticated && (
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
               {error && <ErrorBanner message={error} />}
+
+              {data && (
+                <RepoWarningBanner prs={[...filterPRs(data.authored), ...filterPRs(data.reviewing)]} />
+              )}
 
               {!data && loading && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 6, gap: 2 }}>
