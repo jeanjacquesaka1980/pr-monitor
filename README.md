@@ -6,54 +6,66 @@ A macOS menu bar app that shows all your open GitHub pull requests — authored 
 
 ---
 
-## Prerequisites
+## Installation
 
-### 1. Node.js 20 or 22
+### Option A — Homebrew (recommended)
 
-```bash
-brew install node@22
-```
+No Node.js or cloning required. The app installs as a native macOS `.app`.
 
-### 2. GitHub CLI
+**1. Install GitHub CLI and authenticate**
 
 ```bash
 brew install gh
-```
-
-### 3. Authenticate with GitHub
-
-```bash
 gh auth login
 ```
 
-Follow the prompts and authenticate via browser. Works with **GitHub.com** and **GitHub Enterprise** — the app detects your host automatically. Verify:
+**2. Add the tap and install**
 
 ```bash
-gh auth status
+brew tap jeanjacquesaka1980/homebrew-tap
+brew install --cask pr-monitor
+```
+
+Launch from Spotlight (`Cmd+Space` → `PR Monitor`) or from Applications. The ghost icon appears in your menu bar.
+
+> First launch: macOS Gatekeeper will block the app because it is not notarized. Right-click `PR Monitor.app` in Applications → Open → Open to approve it once.
+
+**To upgrade to a new version:**
+
+```bash
+brew upgrade --cask pr-monitor
 ```
 
 ---
 
-## Running the app
+### Option B — From source
 
-### Development mode (attached to terminal)
+Requires Node.js 20 or 22 and GitHub CLI.
+
+**1. Prerequisites**
+
+```bash
+brew install node@22
+brew install gh
+gh auth login
+```
+
+**2. Clone and run**
 
 ```bash
 git clone https://github.com/jeanjacquesaka1980/pr-monitor.git
 cd pr-monitor
 npm install
-npm run dev
-```
-
-The ghost icon appears in your menu bar. The app runs while the terminal is open. Closing the terminal stops the app.
-
-### Persistent mode (detached from terminal)
-
-```bash
 npm run start
 ```
 
-Builds the app and launches Electron detached from the terminal. You can close the terminal — the app keeps running until you quit it from the menu bar icon or the × button. Use this mode after setting "Launch at login" in preferences.
+Builds the app and launches Electron detached from the terminal. You can close the terminal — the app keeps running until you quit it from the menu bar icon or the × button.
+
+**Development mode (attached to terminal):**
+
+```bash
+npm run dev
+```
 
 **To get the latest version on an existing clone:**
 

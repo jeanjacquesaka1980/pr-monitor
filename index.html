@@ -1834,17 +1834,24 @@
   <div class="section-inner" style="text-align:center;max-width:640px;margin:0 auto;">
     <div class="reveal">
       <div class="section-label">Get Started</div>
-      <h2 class="section-heading" style="font-size:32px;">Three commands. That's it.</h2>
+      <h2 class="section-heading" style="font-size:32px;">Two ways to install.</h2>
       <p class="install-sub">No Xcode. No certificates. No App Store.</p>
     </div>
+    <div class="reveal reveal-delay-1" style="margin-bottom:12px;font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Option A — Homebrew (recommended)</div>
+    <div class="terminal-blocks" style="margin-bottom:32px;">
+      <div class="terminal-block reveal reveal-delay-1"><span class="terminal-comment"># 1. Add the tap and install</span>
+<span class="terminal-cmd">brew tap jeanjacquesaka1980/homebrew-tap
+brew install --cask pr-monitor</span></div>
+      <div class="terminal-block reveal reveal-delay-2"><span class="terminal-comment"># 2. Authenticate with GitHub</span>
+<span class="terminal-cmd">gh auth login</span></div>
+    </div>
+    <div class="reveal reveal-delay-2" style="margin-bottom:12px;font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Option B — From source</div>
     <div class="terminal-blocks">
-      <div class="terminal-block reveal reveal-delay-1"><span class="terminal-comment"># 1. Install GitHub CLI and authenticate</span>
+      <div class="terminal-block reveal reveal-delay-2"><span class="terminal-comment"># 1. Install GitHub CLI and authenticate</span>
 <span class="terminal-cmd">brew install gh && gh auth login</span></div>
-      <div class="terminal-block reveal reveal-delay-2"><span class="terminal-comment"># 2. Clone the repo</span>
+      <div class="terminal-block reveal reveal-delay-3"><span class="terminal-comment"># 2. Clone and install</span>
 <span class="terminal-cmd">git clone https://github.com/jeanjacquesaka1980/pr-monitor.git
-cd pr-monitor</span></div>
-      <div class="terminal-block reveal reveal-delay-3"><span class="terminal-comment"># 3. Install and launch</span>
-<span class="terminal-cmd">npm install && npm run start</span></div>
+cd pr-monitor && npm install && npm run start</span></div>
     </div>
     <p class="install-footer reveal reveal-delay-4">The ghost icon appears in your menu bar. That's it.</p>
     <div class="reveal reveal-delay-4">
