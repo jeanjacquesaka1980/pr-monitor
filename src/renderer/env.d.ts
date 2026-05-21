@@ -12,6 +12,7 @@ declare global {
       quit: () => Promise<void>
       getPrefs: () => Promise<Preferences>
       setPrefs: (prefs: Preferences) => Promise<void>
+      getVersion: () => Promise<string>
     }
   }
 }

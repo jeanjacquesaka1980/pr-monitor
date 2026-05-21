@@ -9,6 +9,11 @@ interface PreferencesProps {
 export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElement {
   const [prefs, setPrefs] = useState<Preferences | null>(null)
   const [saving, setSaving] = useState(false)
+  const [version, setVersion] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.api.getVersion().then(setVersion).catch(() => null)
+  }, [])
 
   useEffect(() => {
     window.api.getPrefs()
@@ -94,22 +99,25 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
         </Box>
       )}
 
-      <Box
-        as="button"
-        onClick={onClose}
-        sx={{
-          mt: 'auto',
-          alignSelf: 'flex-start',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 0,
-          color: 'fg.muted',
-          p: 0,
-          '&:hover': { color: 'fg.default' },
-        }}
-      >
-        ← Back
+      <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box
+          as="button"
+          onClick={onClose}
+          sx={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 0,
+            color: 'fg.muted',
+            p: 0,
+            '&:hover': { color: 'fg.default' },
+          }}
+        >
+          ← Back
+        </Box>
+        {version !== null && (
+          <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>v{version}</Text>
+        )}
       </Box>
     </Box>
   )

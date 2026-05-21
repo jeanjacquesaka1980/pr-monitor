@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('api', {
   quit: (): Promise<void> => ipcRenderer.invoke('app:quit'),
   getPrefs: (): Promise<Preferences> => ipcRenderer.invoke('prefs:get'),
   setPrefs: (prefs: Preferences): Promise<void> => ipcRenderer.invoke('prefs:set', prefs),
+  getVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
 })

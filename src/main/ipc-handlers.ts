@@ -1,4 +1,4 @@
-import { ipcMain, shell, BrowserWindow } from 'electron'
+import { app, ipcMain, shell, BrowserWindow } from 'electron'
 import { checkAuth, getGithubBaseUrl } from './auth'
 import { fetchPRs } from './github'
 import { readPrefs, writePrefs } from './prefs'
@@ -43,4 +43,6 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
   ipcMain.handle('prefs:set', (_event, prefs: Preferences) => {
     writePrefs(prefs)
   })
+
+  ipcMain.handle('app:version', () => app.getVersion())
 }
