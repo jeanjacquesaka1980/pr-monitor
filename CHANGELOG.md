@@ -4,6 +4,15 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.6.0] - 2026-05-21
+
+### Added
+- **Unresolved comments column** — opt-in preference that shows unresolved review thread counts per PR, split by bot and human authors (e.g. `bot 4 / hum 2`), displayed as a compact right-aligned column between the PR title and the open-in-browser link
+- Bot detection uses GitHub's native `__typename` field (`Bot` vs `User`) on the comment author
+- Toggle under Preferences → "Unresolved comments"; off by default
+
+---
+
 ## [1.5.0] - 2026-05-21
 
 ### Added
