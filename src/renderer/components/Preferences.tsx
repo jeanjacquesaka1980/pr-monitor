@@ -13,7 +13,7 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
   useEffect(() => {
     window.api.getPrefs()
       .then(setPrefs)
-      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true, hiddenRepos: [], watchedUsers: [] }))
+      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true, hiddenRepos: [], watchedUsers: [], showUnresolvedComments: false }))
   }, [])
 
   const update = (patch: Partial<Preferences>): void => {
@@ -73,6 +73,21 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
               aria-labelledby="start-minimised-label"
               checked={prefs.startMinimised}
               onClick={() => update({ startMinimised: !prefs.startMinimised })}
+              size="small"
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 3 }}>
+            <Box>
+              <Text sx={{ fontSize: 1, color: 'fg.default', display: 'block' }}>Unresolved comments</Text>
+              <Text sx={{ fontSize: 0, color: 'fg.muted', display: 'block', mt: 1 }}>
+                Show bot and human unresolved review comment counts on each PR
+              </Text>
+            </Box>
+            <ToggleSwitch
+              aria-labelledby="show-unresolved-comments-label"
+              checked={prefs.showUnresolvedComments}
+              onClick={() => update({ showUnresolvedComments: !prefs.showUnresolvedComments })}
               size="small"
             />
           </Box>

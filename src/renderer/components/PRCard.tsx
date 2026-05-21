@@ -14,6 +14,7 @@ import { CheckRunList } from './CheckRunList'
 
 interface PRCardProps {
   pr: PullRequest
+  showUnresolvedComments: boolean
 }
 
 function timeAgo(iso: string): string {
@@ -25,7 +26,7 @@ function timeAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
-export function PRCard({ pr }: PRCardProps): React.ReactElement {
+export function PRCard({ pr, showUnresolvedComments }: PRCardProps): React.ReactElement {
   const [expanded, setExpanded] = useState(false)
   const hasChecks = pr.checkRuns.length > 0 || pr.ciState !== null
 
@@ -99,6 +100,17 @@ export function PRCard({ pr }: PRCardProps): React.ReactElement {
               {pr.repository.nameWithOwner} #{pr.number}
             </Text>
           </Box>
+
+          {showUnresolvedComments && (pr.unresolvedComments.bots > 0 || pr.unresolvedComments.humans > 0) && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, gap: '1px' }}>
+              {pr.unresolvedComments.bots > 0 && (
+                <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1.4 }}>bot {pr.unresolvedComments.bots}</Text>
+              )}
+              {pr.unresolvedComments.humans > 0 && (
+                <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1.4 }}>hum {pr.unresolvedComments.humans}</Text>
+              )}
+            </Box>
+          )}
 
           <IconButton
             icon={LinkExternalIcon}

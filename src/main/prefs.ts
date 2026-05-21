@@ -18,6 +18,7 @@ const DEFAULTS: Preferences = {
   startMinimised: true,
   hiddenRepos: [],
   watchedUsers: [],
+  showUnresolvedComments: false,
 }
 
 export function readPrefs(): Preferences {

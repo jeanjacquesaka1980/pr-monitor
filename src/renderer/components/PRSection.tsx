@@ -9,9 +9,10 @@ interface PRSectionProps {
   prs: PullRequest[]
   emptyMessage: string
   defaultOpen?: boolean
+  showUnresolvedComments: boolean
 }
 
-export function PRSection({ title, prs, emptyMessage, defaultOpen = true }: PRSectionProps): React.ReactElement {
+export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUnresolvedComments }: PRSectionProps): React.ReactElement {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
@@ -53,7 +54,7 @@ export function PRSection({ title, prs, emptyMessage, defaultOpen = true }: PRSe
             <Text sx={{ fontSize: 1, color: 'fg.subtle' }}>{emptyMessage}</Text>
           </Box>
         ) : (
-          prs.map((pr) => <PRCard key={pr.id} pr={pr} />)
+          prs.map((pr) => <PRCard key={pr.id} pr={pr} showUnresolvedComments={showUnresolvedComments} />)
         )
       )}
     </Box>

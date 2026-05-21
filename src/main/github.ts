@@ -45,6 +45,18 @@ const PR_FRAGMENT = `
         }
       }
     }
+    reviewThreads(first: 100) {
+      nodes {
+        isResolved
+        comments(first: 1) {
+          nodes {
+            author {
+              __typename
+            }
+          }
+        }
+      }
+    }
   }
 `
 
@@ -98,6 +110,15 @@ interface RawContextNode {
   } | null
 }
 
+interface RawReviewThread {
+  isResolved: boolean
+  comments: {
+    nodes: Array<{
+      author: { __typename: string } | null
+    }>
+  }
+}
+
 interface RawPR {
   id: string
   number: number
@@ -117,6 +138,9 @@ interface RawPR {
         } | null
       }
     }>
+  }
+  reviewThreads: {
+    nodes: RawReviewThread[]
   }
 }
 
@@ -166,6 +190,18 @@ function normalizePR(raw: RawPR): PullRequest {
   }
   const checkRuns = Array.from(checkRunMap.values()).map(normalizeCheckRun)
 
+  const threads = raw.reviewThreads?.nodes ?? []
+  const unresolvedComments = { bots: 0, humans: 0 }
+  for (const thread of threads) {
+    if (thread.isResolved) continue
+    const typename = thread.comments.nodes[0]?.author?.__typename
+    if (typename === 'Bot') {
+      unresolvedComments.bots++
+    } else {
+      unresolvedComments.humans++
+    }
+  }
+
   return {
     id: raw.id,
     number: raw.number,
@@ -178,6 +214,7 @@ function normalizePR(raw: RawPR): PullRequest {
     author: raw.author,
     ciState: rollup?.state ?? null,
     checkRuns,
+    unresolvedComments,
   }
 }
 
