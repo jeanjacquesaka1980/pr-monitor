@@ -2,7 +2,7 @@
 
 ![PR Monitor](screenshots/app.png)
 
-A macOS menu bar app that shows all your open GitHub pull requests — authored and under review — with CI status, review decisions, and individual workflow check runs, updated every 60 seconds. Works with both GitHub.com and GitHub Enterprise.
+A macOS menu bar app that shows all your open GitHub pull requests — authored and under review — with CI status, review decisions, and individual workflow check runs, updated every 60 seconds. Filter by repository or author. Works with both GitHub.com and GitHub Enterprise.
 
 ---
 
@@ -76,11 +76,14 @@ npm run start
 | CI badge | `Passing` / `Failing` / `Pending` / `No CI` |
 | Review badge | `Approved` / `Changes` / `Review required` |
 | `↗` button | Opens the PR in your browser |
-| Filter button | Filter PRs by repository — highlighted blue when active |
+| Filter button | Filter by repository — highlighted blue when active; persists across restarts |
+| People button | Filter Others' PRs by author — opt-in, nobody selected means the section is empty; persists across restarts |
 | Refresh button | Manual refresh (auto-refreshes every 60s) |
 | Pin button | Keep the window always on top — clicking elsewhere won't close it |
 | Gear button | Open preferences panel |
 | `×` button | Fully quit the app |
+
+Warning banners appear at the top of the list when a repo accumulates too many open PRs: yellow at 10+, red at 15+. Both filters are applied before counting.
 
 Click anywhere outside the panel to dismiss it (unless pinned).
 
@@ -165,15 +168,18 @@ src/
 │   └── preload.ts          ← Secure context bridge to renderer
 ├── renderer/               ← React UI (GitHub Primer design system)
 │   ├── components/
-│   │   ├── Header.tsx      ← Title bar with refresh, pin, prefs, quit buttons
-│   │   ├── PRSection.tsx   ← Collapsible AUTHORED / REVIEWING section
-│   │   ├── PRCard.tsx      ← Single PR row with expand toggle
-│   │   ├── CheckRunList.tsx← Workflow check runs grouped by workflow, spinning indicator for running jobs
-│   │   ├── CIBadge.tsx     ← CI status badge
-│   │   ├── ReviewBadge.tsx ← Review decision badge
-│   │   ├── AuthGate.tsx    ← Shown when gh is not authenticated
-│   │   ├── ErrorBanner.tsx ← Inline error display
-│   │   └── Preferences.tsx ← Preferences panel (launch at login, start minimised)
+│   │   ├── Header.tsx          ← Title bar with filter, author filter, refresh, pin, prefs, quit
+│   │   ├── PRSection.tsx       ← Collapsible Your PRs / Others' PRs section
+│   │   ├── PRCard.tsx          ← Single PR row with expand toggle
+│   │   ├── CheckRunList.tsx    ← Workflow check runs grouped by workflow, spinning indicator for running jobs
+│   │   ├── CIBadge.tsx         ← CI status badge
+│   │   ├── ReviewBadge.tsx     ← Review decision badge
+│   │   ├── RepoFilter.tsx      ← Repository filter dropdown
+│   │   ├── UserFilter.tsx      ← Author filter dropdown
+│   │   ├── RepoWarningBanner.tsx ← Warning/danger banners for repos with too many open PRs
+│   │   ├── AuthGate.tsx        ← Shown when gh is not authenticated
+│   │   ├── ErrorBanner.tsx     ← Inline error display
+│   │   └── Preferences.tsx     ← Preferences panel (launch at login, start minimised)
 │   └── hooks/
 │       ├── useAuth.ts      ← Auth state via gh CLI
 │       └── usePRs.ts       ← PR polling with 60s interval
@@ -200,50 +206,4 @@ scripts/
 
 ## Changelog
 
-### v1.3.3
-- Sections renamed: **Authored** → **Your PRs**, **Reviewing** → **Others' PRs**
-- Fix: clicking the filter icon again now correctly closes the dropdown
-
-### v1.3.2
-- Fix: duplicate check runs no longer appear when a PR is re-opened or a job is re-run — deduplication now uses the run's start timestamp so only the latest run per job is always shown
-
-### v1.3.1
-- Fix: REVIEWING section now shows all open PRs from your repos, not just those where your review is explicitly requested
-
-### v1.3.0
-- New: repository filter dropdown in the header — check/uncheck repos to show only the PRs you care about, applies to both AUTHORED and REVIEWING. Filter is highlighted in blue when active and persists across sessions.
-
-### v1.2.3
-- Running CI jobs now show a spinning indicator instead of a static stopwatch icon
-
-### v1.2.2
-- Fix: PR and check run links now work on GitHub Enterprise — host is detected dynamically from the `gh` CLI instead of being hardcoded to `github.com`
-
-### v1.2.1
-- Fix: links (open PR, view check run) now work on first click — Primer React's Tooltip was intercepting clicks to dismiss itself
-- Fix: tooltips no longer get stuck visible after clicking a button
-
-### v1.2.0
-- Preferences panel (gear icon in header): launch at login, start minimised
-- `npm run start` — builds and launches Electron detached from the terminal; closing the terminal no longer stops the app
-- Preferences saved to `~/Library/Application Support/PR Monitor/preferences.json`
-
-### v1.1.1
-- Fix: workflow separator line now renders after jobs, not below the title
-
-### v1.1.0
-- Collapsible AUTHORED / REVIEWING sections
-- Expandable CI check runs per PR, grouped by workflow with status icons
-- Corporate proxy support — all API calls route through `gh` CLI
-- Avatar size improved
-- Upgraded to Node 22, Vite 8, Electron 39
-
-### v1.0.0
-- Initial release
-- Ghost menu bar icon
-- Authored and reviewing PR sections
-- CI status and review decision badges
-- Auto-refresh every 60s, manual refresh
-- Pin/float mode
-- Quit via tray right-click or × button
-- Auth via `gh auth login`
+See [CHANGELOG.md](CHANGELOG.md) for the full version history.
