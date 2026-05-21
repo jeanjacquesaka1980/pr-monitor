@@ -4,6 +4,15 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.7.3](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.7.2...v1.7.3) (2026-05-21)
+
+
+### Bug Fixes
+
+* add --clobber to gh release upload to handle re-runs cleanly ([3f2ac51](https://github.com/jeanjacquesaka1980/pr-monitor/commit/3f2ac519c851d6a8432c86f86e0279a41d24d817))
+* disable electron-builder auto-publish in CI with --publish never ([91e0b06](https://github.com/jeanjacquesaka1980/pr-monitor/commit/91e0b068a929b4b4c2c598cbf9c7f807e899c0c1))
+* replace heredoc with sed in brew-release workflow to fix YAML parse error ([c5f7946](https://github.com/jeanjacquesaka1980/pr-monitor/commit/c5f79463424133fdfb9704e8bf6d50b8699b0fbb))
+
 ## [1.7.2] - 2026-05-21
 
 ### Added
