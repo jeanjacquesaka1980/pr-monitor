@@ -26,7 +26,7 @@ brew tap jeanjacquesaka1980/homebrew-tap
 brew install --cask pr-monitor
 ```
 
-Launch from Spotlight (`Cmd+Space` → `PR Monitor`) or from Applications. The ghost icon appears in your menu bar.
+Launch from Spotlight (`Cmd+Space` → `PR Monitor`) or from Applications. You can also drag it from Applications to your Dock. The ghost icon appears in your menu bar.
 
 > First launch: macOS Gatekeeper will block the app because it is not notarized. Right-click `PR Monitor.app` in Applications → Open → Open to approve it once.
 
