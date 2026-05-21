@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
-import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon } from '@primer/octicons-react'
+import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon, PeopleIcon } from '@primer/octicons-react'
 import { RepoFilter } from './RepoFilter'
+import { UserFilter } from './UserFilter'
 
 interface HeaderProps {
   username: string | undefined
@@ -13,17 +14,23 @@ interface HeaderProps {
   repos: string[]
   hiddenRepos: string[]
   onToggleRepo: (repo: string) => void
+  reviewingAuthors: string[]
+  watchedUsers: string[]
+  onToggleUser: (login: string) => void
 }
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo }: HeaderProps): React.ReactElement {
+export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo, reviewingAuthors, watchedUsers, onToggleUser }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
+  const [showUserFilter, setShowUserFilter] = useState(false)
   const filterButtonRef = useRef<HTMLButtonElement>(null)
+  const userFilterButtonRef = useRef<HTMLButtonElement>(null)
   const filterActive = hiddenRepos.length > 0
+  const userFilterActive = watchedUsers.length > 0
 
   const toggleFloat = (): void => {
     const next = !floating
@@ -84,6 +91,29 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
                   onToggle={onToggleRepo}
                   onClose={() => setShowFilter(false)}
                   triggerRef={filterButtonRef}
+                />
+              )}
+            </Box>
+          )}
+          {!showingPrefs && reviewingAuthors.length > 0 && (
+            <Box sx={{ position: 'relative' }}>
+              <IconButton
+                ref={userFilterButtonRef}
+                icon={PeopleIcon}
+                aria-label="Filter authors"
+                title="Filter authors"
+                variant="invisible"
+                size="small"
+                onClick={() => setShowUserFilter((v) => !v)}
+                sx={{ color: userFilterActive ? 'accent.fg' : 'fg.muted' }}
+              />
+              {showUserFilter && (
+                <UserFilter
+                  users={reviewingAuthors}
+                  watchedUsers={watchedUsers}
+                  onToggle={onToggleUser}
+                  onClose={() => setShowUserFilter(false)}
+                  triggerRef={userFilterButtonRef}
                 />
               )}
             </Box>
