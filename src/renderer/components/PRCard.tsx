@@ -6,7 +6,7 @@ import {
   GitPullRequestIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  HubotIcon,
+  DependabotIcon,
   PersonIcon,
 } from '@primer/octicons-react'
 import type { PullRequest } from '@shared/types'
@@ -107,7 +107,7 @@ export function PRCard({ pr, showUnresolvedComments }: PRCardProps): React.React
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, gap: '2px' }}>
               {pr.unresolvedComments.bots > 0 && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ color: 'fg.subtle', display: 'flex' }}><HubotIcon size={12} /></Box>
+                  <Box sx={{ color: 'fg.subtle', display: 'flex' }}><DependabotIcon size={12} /></Box>
                   <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1 }}>{pr.unresolvedComments.bots}</Text>
                 </Box>
               )}
