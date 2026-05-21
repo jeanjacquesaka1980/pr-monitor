@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How PR Monitor Was Built — Process</title>
+<style>
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --surface-2: #21262d;
+  --border:  #30363d;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+  --subtle:  #6e7681;
+  --green:   #3fb950;
+  --blue:    #388bfd;
+  --purple:  #a371f7;
+  --orange:  #f0883e;
+  --yellow:  #d29922;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  padding: 56px 24px 96px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 14px;
+}
+.page-header h1 {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.page-header p {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ── DIAGRAM WRAP ── */
+.diagram-outer {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.diagram {
+  position: relative;
+  width: 900px;
+  height: 1150px;
+  margin: 0 auto;
+}
+
+/* SVG arrows sit behind nodes */
+.diagram > svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 900px;
+  height: 1150px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── NODES ── */
+.node {
+  position: absolute;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 18px;
+}
+.node-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.node-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green  { background: var(--green); }
+.dot-blue   { background: var(--blue); }
+.dot-purple { background: var(--purple); }
+.dot-orange { background: var(--orange); }
+.dot-yellow { background: var(--yellow); }
+
+/* coloured left border accents */
+.a-green  { border-left: 3px solid var(--green); }
+.a-blue   { border-left: 3px solid var(--blue); }
+.a-purple { border-left: 3px solid var(--purple); }
+.a-orange { border-left: 3px solid var(--orange); }
+.a-yellow { border-left: 3px solid var(--yellow); }
+
+/* result node gets a special glow */
+.node-result {
+  border-color: rgba(63,185,80,0.5);
+  background: rgba(63,185,80,0.06);
+  text-align: center;
+}
+.node-result .node-label { justify-content: center; }
+.node-result .node-desc  { text-align: center; }
+
+/* ── TECH TAGS ── */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.tag-blue   { color:var(--blue);   border-color:rgba(56,139,253,0.4);   background:rgba(56,139,253,0.1); }
+.tag-green  { color:var(--green);  border-color:rgba(63,185,80,0.4);    background:rgba(63,185,80,0.1); }
+.tag-purple { color:var(--purple); border-color:rgba(163,113,247,0.4);  background:rgba(163,113,247,0.1); }
+.tag-orange { color:var(--orange); border-color:rgba(240,136,62,0.4);   background:rgba(240,136,62,0.1); }
+.tag-yellow { color:var(--yellow); border-color:rgba(210,153,34,0.4);   background:rgba(210,153,34,0.1); }
+
+/* ── LOOP STEPS ── */
+.loop-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 14px;
+  flex-wrap: nowrap;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+.step-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--purple);
+  background: rgba(163,113,247,0.15);
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-arr {
+  color: var(--subtle);
+  font-size: 14px;
+  padding: 0 6px;
+}
+
+/* ── GUARDRAILS GRID ── */
+.guard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 28px;
+  margin-top: 8px;
+}
+.guard-item {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.guard-item strong { color: var(--text); }
+
+/* ── LEGEND ── */
+.legend {
+  max-width: 900px;
+  margin: 48px auto 0;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend-line {
+  width: 28px; height: 1.5px;
+  background: var(--border);
+}
+.legend-dashed {
+  width: 28px; height: 1.5px;
+  background: repeating-linear-gradient(90deg,var(--purple) 0,var(--purple) 4px,transparent 4px,transparent 7px);
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="eyebrow">Development Process</div>
+  <h1>How PR Monitor Was Built</h1>
+  <p>A step-by-step journey from a tester's problem to a working macOS tool — using Claude Code as a pair programmer, one pull request at a time.</p>
+</div>
+
+<!-- DIAGRAM -->
+<div class="diagram-outer">
+<div class="diagram">
+
+  <!-- ── SVG ARROWS ── -->
+  <svg aria-hidden="true">
+    <defs>
+      <!-- standard arrowhead -->
+      <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#484f58"/>
+      </marker>
+      <!-- purple dashed arrowhead for loop -->
+      <marker id="arr-p" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#a371f7"/>
+      </marker>
+    </defs>
+
+    <!-- trigger → role (fan left) -->
+    <path d="M 450 90 C 450 115 125 115 125 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- trigger → tool (straight) -->
+    <path d="M 450 90 L 450 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- trigger → philosophy (fan right) -->
+    <path d="M 450 90 C 450 115 775 115 775 140" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- role → stack -->
+    <path d="M 125 240 C 125 265 235 265 235 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- tool → stack (straight) -->
+    <path d="M 450 240 L 450 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- philosophy → stack -->
+    <path d="M 775 240 C 775 265 665 265 665 290" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- stack → guardrails -->
+    <path d="M 450 400 L 450 450" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- guardrails → devloop -->
+    <path d="M 450 590 L 450 640" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- devloop → design -->
+    <path d="M 260 810 C 260 840 200 840 200 860" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- devloop → bugs -->
+    <path d="M 640 810 C 640 840 700 840 700 860" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- design → result -->
+    <path d="M 200 970 C 200 998 355 998 355 1020" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <!-- bugs → result -->
+    <path d="M 700 970 C 700 998 545 998 545 1020" stroke="#30363d" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+    <!-- ↺ loop-back (right side of devloop, dashed purple) -->
+    <path d="M 822 780 C 868 780 868 650 822 650" stroke="#a371f7" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-p)"/>
+    <text x="878" y="718" fill="#6e7681" font-size="11" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" text-anchor="middle">↺ repeat</text>
+  </svg>
+
+  <!-- ── NODES ── -->
+
+  <!-- TRIGGER -->
+  <div class="node a-green" style="left:270px;top:0;width:360px;">
+    <div class="node-label">
+      <span class="dot dot-green"></span>
+      Trigger — The Problem
+    </div>
+    <div class="node-desc">As a tester, I needed to always watch PRs and CI jobs across multiple repos — without opening a browser tab every five minutes.</div>
+  </div>
+
+  <!-- MY ROLE -->
+  <div class="node a-orange" style="left:0;top:140px;width:250px;">
+    <div class="node-label">
+      <span class="dot dot-orange"></span>
+      My Role
+    </div>
+    <div class="node-desc">Tester. Responsible for catching what slips through — broken builds, unreviewed PRs, silent CI failures before they become incidents.</div>
+  </div>
+
+  <!-- CLAUDE CODE -->
+  <div class="node a-blue" style="left:325px;top:140px;width:250px;">
+    <div class="node-label">
+      <span class="dot dot-blue"></span>
+      Claude Code
+    </div>
+    <div class="node-desc">Personal subscription. AI pair programmer living in the terminal. Not a service — a collaborator. Used for the entire build: architecture, code, fixes, design.</div>
+  </div>
+
+  <!-- THE GOAL -->
+  <div class="node a-purple" style="left:650px;top:140px;width:250px;">
+    <div class="node-label">
+      <span class="dot dot-purple"></span>
+      The Goal
+    </div>
+    <div class="node-desc">Learn new languages. Write structured, quality code I could read and maintain. Something organised — not just working, but well built.</div>
+  </div>
+
+  <!-- STACK -->
+  <div class="node a-blue" style="left:175px;top:290px;width:550px;">
+    <div class="node-label">
+      <span class="dot dot-blue"></span>
+      Stack — Suggested by Claude
+    </div>
+    <div class="node-desc">Claude recommended this combination for structure, learnability, and code quality. Each choice has a reason.</div>
+    <div class="tags">
+      <span class="tag tag-blue">Electron</span>
+      <span class="tag tag-blue">React</span>
+      <span class="tag tag-blue">TypeScript (strict)</span>
+      <span class="tag tag-blue">Primer React</span>
+      <span class="tag tag-blue">GitHub GraphQL API</span>
+      <span class="tag tag-blue">GitHub CLI</span>
+    </div>
+  </div>
+
+  <!-- GUARDRAILS -->
+  <div class="node a-orange" style="left:75px;top:450px;width:750px;">
+    <div class="node-label">
+      <span class="dot dot-orange"></span>
+      Guardrails &amp; Boundaries
+    </div>
+    <div class="guard-grid">
+      <div class="guard-item">
+        <span>📄</span>
+        <span><strong>CLAUDE.md</strong> — project standards and rules committed directly to the repo. TypeScript, styling, error handling, file conventions.</span>
+      </div>
+      <div class="guard-item">
+        <span>🎯</span>
+        <span><strong>Clear, scoped prompts</strong> — the more precise the instruction, the better the output. No vague asks.</span>
+      </div>
+      <div class="guard-item">
+        <span>🚧</span>
+        <span><strong>No predefined agents</strong> — just prompts with explicit context and intent. Simple and controllable.</span>
+      </div>
+      <div class="guard-item">
+        <span>🔒</span>
+        <span><strong>Defined scope</strong> — CLAUDE.md is explicit about what to build and, equally important, what NOT to build.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEV LOOP -->
+  <div class="node a-purple" style="left:75px;top:640px;width:750px;">
+    <div class="node-label">
+      <span class="dot dot-purple"></span>
+      Development Loop — One Small Piece at a Time
+    </div>
+    <div class="node-desc">Each feature or fix is a focused, independent unit. Never multiple concerns in one go — always one clear goal per session.</div>
+    <div class="loop-steps">
+      <div class="step"><span class="step-num">1</span>Write a clear prompt</div>
+      <span class="step-arr">→</span>
+      <div class="step"><span class="step-num">2</span>Build the small piece</div>
+      <span class="step-arr">→</span>
+      <div class="step"><span class="step-num">3</span>Open a Pull Request</div>
+      <span class="step-arr">→</span>
+      <div class="step"><span class="step-num">4</span>Review &amp; Merge</div>
+    </div>
+  </div>
+
+  <!-- DESIGN ITERATIONS -->
+  <div class="node a-green" style="left:50px;top:860px;width:310px;">
+    <div class="node-label">
+      <span class="dot dot-green"></span>
+      Design Iterations
+    </div>
+    <div class="node-desc">Primer color tokens, PR row structure, section layout, header icons, mock window fidelity — refined across multiple sessions, always referencing the actual component code.</div>
+  </div>
+
+  <!-- BUG FIXES -->
+  <div class="node a-yellow" style="left:540px;top:860px;width:310px;">
+    <div class="node-label">
+      <span class="dot dot-yellow"></span>
+      Bug Fixes
+    </div>
+    <div class="node-desc">CI run deduplication (by <code style="font-size:11px;color:var(--muted)">startedAt</code>), filter toggle, dynamic GitHub host detection, section renames. Each fixed in its own dedicated PR.</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="node a-green node-result" style="left:250px;top:1020px;width:400px;">
+    <div class="node-label">
+      <span class="dot dot-green"></span>
+      PR Monitor&nbsp;
+      <span class="tag tag-green" style="margin-left:4px;">v1.3.3 ✓</span>
+    </div>
+    <div class="node-desc">Electron · macOS menu bar · 5 releases · one tester watching every PR and every CI job — at a glance.</div>
+  </div>
+
+</div><!-- /diagram -->
+</div><!-- /diagram-outer -->
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-line"></div>
+    Dependency / flow
+  </div>
+  <div class="legend-item">
+    <div class="legend-dashed"></div>
+    Iterative loop (repeats)
+  </div>
+  <div class="legend-item">
+    <span class="dot dot-green" style="width:10px;height:10px;border-radius:50%;"></span>
+    Start / end
+  </div>
+  <div class="legend-item">
+    <span class="dot dot-blue" style="width:10px;height:10px;border-radius:50%;"></span>
+    Technical decision
+  </div>
+  <div class="legend-item">
+    <span class="dot dot-orange" style="width:10px;height:10px;border-radius:50%;"></span>
+    Process / rules
+  </div>
+  <div class="legend-item">
+    <span class="dot dot-purple" style="width:10px;height:10px;border-radius:50%;"></span>
+    Development cycle
+  </div>
+  <div class="legend-item">
+    <span class="dot dot-yellow" style="width:10px;height:10px;border-radius:50%;"></span>
+    Fixes
+  </div>
+</div>
+
+</body>
+</html>
