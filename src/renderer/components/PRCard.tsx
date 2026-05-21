@@ -6,6 +6,8 @@ import {
   GitPullRequestIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  HubotIcon,
+  PersonIcon,
 } from '@primer/octicons-react'
 import type { PullRequest } from '@shared/types'
 import { CIBadge } from './CIBadge'
@@ -102,12 +104,18 @@ export function PRCard({ pr, showUnresolvedComments }: PRCardProps): React.React
           </Box>
 
           {showUnresolvedComments && (pr.unresolvedComments.bots > 0 || pr.unresolvedComments.humans > 0) && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, gap: '1px' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, gap: '2px' }}>
               {pr.unresolvedComments.bots > 0 && (
-                <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1.4 }}>bot {pr.unresolvedComments.bots}</Text>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ color: 'fg.subtle', display: 'flex' }}><HubotIcon size={12} /></Box>
+                  <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1 }}>{pr.unresolvedComments.bots}</Text>
+                </Box>
               )}
               {pr.unresolvedComments.humans > 0 && (
-                <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1.4 }}>hum {pr.unresolvedComments.humans}</Text>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ color: 'fg.subtle', display: 'flex' }}><PersonIcon size={12} /></Box>
+                  <Text sx={{ fontSize: 0, color: 'fg.muted', lineHeight: 1 }}>{pr.unresolvedComments.humans}</Text>
+                </Box>
               )}
             </Box>
           )}
