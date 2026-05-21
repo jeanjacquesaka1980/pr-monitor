@@ -8,6 +8,7 @@ import { AuthGate } from './components/AuthGate'
 import { ErrorBanner } from './components/ErrorBanner'
 import { PreferencesPanel } from './components/Preferences'
 import { RepoWarningBanner } from './components/RepoWarningBanner'
+import type { PullRequest } from '@shared/types'
 
 export function App(): React.ReactElement {
   const auth = useAuth()
@@ -15,13 +16,18 @@ export function App(): React.ReactElement {
   const { data, error, loading, lastUpdated, refresh } = usePRs(isAuthenticated)
   const [showPrefs, setShowPrefs] = useState(false)
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
-  // Keep a ref to the full prefs so toggleRepo never needs to re-fetch them
+  const [watchedUsers, setWatchedUsers] = useState<string[]>([])
+  // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
   const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
 
-  // Load prefs on mount — store full object in ref, hiddenRepos in state
+  // Load prefs on mount — store full object in ref, derived state in state
   useEffect(() => {
     window.api.getPrefs()
-      .then((p) => { prefsRef.current = p; setHiddenRepos(p.hiddenRepos ?? []) })
+      .then((p) => {
+        prefsRef.current = p
+        setHiddenRepos(p.hiddenRepos ?? [])
+        setWatchedUsers(p.watchedUsers ?? [])
+      })
       .catch(() => {})
   }, [])
 
@@ -33,6 +39,13 @@ export function App(): React.ReactElement {
       ...data.reviewing.map((pr) => pr.repository.nameWithOwner),
     ])
     return Array.from(repos).sort()
+  }, [data])
+
+  // All unique authors from the reviewing list (unfiltered by repo)
+  const allReviewingAuthors = useMemo(() => {
+    if (!data) return []
+    const logins = new Set(data.reviewing.map((pr) => pr.author.login))
+    return Array.from(logins).sort()
   }, [data])
 
   const toggleRepo = (repo: string): void => {
@@ -47,8 +60,26 @@ export function App(): React.ReactElement {
     }
   }
 
+  const toggleUser = (login: string): void => {
+    const next = watchedUsers.includes(login)
+      ? watchedUsers.filter((u) => u !== login)
+      : [...watchedUsers, login]
+    setWatchedUsers(next)
+    if (prefsRef.current) {
+      const updated = { ...prefsRef.current, watchedUsers: next }
+      prefsRef.current = updated
+      window.api.setPrefs(updated).catch(() => {})
+    }
+  }
+
   const filterPRs = <T extends { repository: { nameWithOwner: string } }>(prs: T[]): T[] =>
     hiddenRepos.length === 0 ? prs : prs.filter((pr) => !hiddenRepos.includes(pr.repository.nameWithOwner))
+
+  // Reviewing: empty if no users selected; otherwise filter by watched users then by repo
+  const filterReviewing = (prs: PullRequest[]): PullRequest[] => {
+    if (watchedUsers.length === 0) return []
+    return filterPRs(prs.filter((pr) => watchedUsers.includes(pr.author.login)))
+  }
 
   return (
     <ThemeProvider colorMode="dark" nightScheme="dark_dimmed">
@@ -73,6 +104,9 @@ export function App(): React.ReactElement {
             repos={allRepos}
             hiddenRepos={hiddenRepos}
             onToggleRepo={toggleRepo}
+            reviewingAuthors={allReviewingAuthors}
+            watchedUsers={watchedUsers}
+            onToggleUser={toggleUser}
           />
 
           {showPrefs && (
@@ -92,7 +126,7 @@ export function App(): React.ReactElement {
               {error && <ErrorBanner message={error} />}
 
               {data && (
-                <RepoWarningBanner prs={[...filterPRs(data.authored), ...filterPRs(data.reviewing)]} />
+                <RepoWarningBanner prs={[...filterPRs(data.authored), ...filterReviewing(data.reviewing)]} />
               )}
 
               {!data && loading && (
@@ -111,8 +145,8 @@ export function App(): React.ReactElement {
                   />
                   <PRSection
                     title="Others' PRs"
-                    prs={filterPRs(data.reviewing)}
-                    emptyMessage="No other open PRs in your repos"
+                    prs={filterReviewing(data.reviewing)}
+                    emptyMessage={watchedUsers.length === 0 ? 'Select authors to see their PRs' : 'No open PRs from watched authors'}
                   />
                 </>
               )}

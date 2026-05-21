@@ -17,6 +17,7 @@ const DEFAULTS: Preferences = {
   launchAtLogin: false,
   startMinimised: true,
   hiddenRepos: [],
+  watchedUsers: [],
 }
 
 export function readPrefs(): Preferences {

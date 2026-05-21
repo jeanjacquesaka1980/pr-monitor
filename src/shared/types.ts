@@ -85,4 +85,5 @@ export interface Preferences {
   launchAtLogin: boolean
   startMinimised: boolean
   hiddenRepos: string[]
+  watchedUsers: string[]
 }
