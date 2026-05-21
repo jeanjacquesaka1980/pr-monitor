@@ -878,6 +878,53 @@
     background: rgba(229,83,75,0.12);
   }
 
+  /* ── AUTHORS SECTION ── */
+  .author-filter-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .author-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .author-filter-icon { color: var(--accent); }
+  .author-cb-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .author-cb-row:last-child { border-bottom: none; }
+  .author-cb-row input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 13px;
+    height: 13px;
+  }
+  .author-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .author-cb-row.dimmed { opacity: 0.35; }
+
   /* ── PREFERENCES SECTION ── */
   .pref-card {
     background: var(--surface);
@@ -990,6 +1037,7 @@
     <li><a href="#ci">CI</a></li>
     <li><a href="#filter">Filter</a></li>
     <li><a href="#warnings">Warnings</a></li>
+    <li><a href="#authors">Authors</a></li>
     <li><a href="#preferences">Preferences</a></li>
     <li><a href="#install">Install</a></li>
   </ul>
@@ -1512,6 +1560,44 @@
   </div>
 </section>
 
+<!-- ══ AUTHORS ══ -->
+<section id="authors">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">Authors</div>
+        <h2 class="section-heading">Choose whose PRs you follow</h2>
+        <p class="section-body">Others' PRs is opt-in, not opt-out. Use the people icon in the header to pick exactly which colleagues you want to track. Nobody selected means Others' PRs stays empty — you only see what you deliberately chose to watch.</p>
+        <p class="section-body" style="margin-top:12px;">The selection is saved to preferences and persists across restarts. The author filter stacks with the repo filter — both apply at the same time.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="author-filter-demo">
+          <div class="author-filter-header">
+            <!-- PeopleIcon -->
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" class="author-filter-icon"><path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.56 3.012.749.749 0 0 1-.885.954.752.752 0 0 1-.549-.514 3.507 3.507 0 0 0-2.522-2.372.75.75 0 0 1-.574-.73v-.352a.75.75 0 0 1 .416-.672A1.5 1.5 0 0 0 11 5.5.75.75 0 0 1 11 4Zm-5.5-.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+            Filter by author
+          </div>
+          <label class="author-cb-row">
+            <input type="checkbox" checked onclick="return false">
+            <div class="author-avatar" style="background:#4184e4;">A</div>
+            alice
+          </label>
+          <label class="author-cb-row">
+            <input type="checkbox" checked onclick="return false">
+            <div class="author-avatar" style="background:#57ab5a;">B</div>
+            bob
+          </label>
+          <label class="author-cb-row dimmed">
+            <input type="checkbox" onclick="return false">
+            <div class="author-avatar" style="background:#c69026;">C</div>
+            carol
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══ PREFERENCES ══ -->
 <section id="preferences">
   <div class="section-inner">
@@ -1639,7 +1725,7 @@ cd pr-monitor</span></div>
 
   // ── SCROLL HIGHLIGHT NAV ──
   var navLinks = document.querySelectorAll('.nav-links a');
-  var sectionIds = ['hero','design','window','sections','ci','filter','warnings','preferences','install'];
+  var sectionIds = ['hero','design','window','sections','ci','filter','warnings','authors','preferences','install'];
   var sectionEls = sectionIds.map(function(id) { return document.getElementById(id); });
 
   var observer = new IntersectionObserver(function(entries) {
