@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import type { CheckAuthResult, FetchPRsResponse, Preferences } from '@shared/types'
+import type { CheckAuthResult, FetchPRsResponse, Preferences, WorkflowRun } from '@shared/types'
 
 declare global {
   interface Window {
@@ -15,6 +15,7 @@ declare global {
       getVersion: () => Promise<string>
       checkUpdate: () => Promise<{ hasUpdate: boolean; latestVersion: string }>
       listRepos: () => Promise<string[]>
+      fetchWorkflowRuns: (repos: string[]) => Promise<WorkflowRun[]>
     }
   }
 }

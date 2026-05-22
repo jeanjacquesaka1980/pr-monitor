@@ -19,6 +19,7 @@ const DEFAULTS: Preferences = {
   hiddenRepos: [],
   watchedUsers: [],
   showUnresolvedComments: false,
+  showWorkflowJobs: false,
 }
 
 export function readPrefs(): Preferences {

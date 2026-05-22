@@ -1094,6 +1094,7 @@
     <li><a href="#ci">CI</a></li>
     <li><a href="#filter">Filter</a></li>
     <li><a href="#updates">Updates</a></li>
+    <li><a href="#jobs">Jobs</a></li>
     <li><a href="#warnings">Warnings</a></li>
     <li><a href="#authors">Authors</a></li>
     <li><a href="#comments">Comments</a></li>
@@ -1846,6 +1847,10 @@
             <span>Unresolved comments</span>
             <div class="toggle off"></div>
           </div>
+          <div class="pref-card-row">
+            <span>Workflow jobs</span>
+            <div class="toggle off"></div>
+          </div>
           <div class="pref-card-row" style="border-bottom:none;padding-bottom:0;">
             <span style="font-size:11px;color:var(--text-subtle);">- Back</span>
             <span style="font-size:11px;color:var(--text-subtle);">v1.9.0</span>
@@ -1871,6 +1876,63 @@
           <!-- InfoIcon -->
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>
           <span>v<strong>1.9.1</strong> is available — run <code>brew upgrade --cask pr-monitor</code></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ JOBS ══ -->
+<section id="jobs">
+  <div class="section-inner">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="section-label">Workflow Jobs</div>
+        <h2 class="section-heading">See every job, not just PRs</h2>
+        <p class="section-body">Enable Workflow Jobs in Preferences to get a third section below your PRs. It shows the latest run for every workflow in your repos — scheduled nightly jobs, manual dispatches, push triggers — anything that is not tied to a pull request.</p>
+        <p class="section-body" style="margin-top:12px;">Each row shows the workflow name, the repo it belongs to, the trigger type (scheduled, manual, push), and how long ago it ran. The status icon is green for success, red for failure, orange for in-progress. Clicking any row opens the run on GitHub.</p>
+        <p class="section-body" style="margin-top:12px;">The section respects your repo filter — only repos you have not hidden will appear.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="pref-card" style="padding:0;overflow:hidden;">
+          <div style="padding:8px 12px;background:var(--bg-subtle);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="color:var(--text-muted);"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm1.5 0a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v3.5l2.25 2.25a.75.75 0 0 1-1.06 1.06l-2.5-2.5A.75.75 0 0 1 7 9V4.75a.75.75 0 0 1 1.5 0Z"/></svg>
+            <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Workflow Jobs</span>
+            <span style="font-size:10px;background:var(--border);color:var(--text-muted);padding:0 5px;border-radius:10px;font-weight:600;margin-left:2px;">3</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-subtle);">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="color:#3fb950;flex-shrink:0;"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm3.78 4.78a.75.75 0 0 0-1.06 0L6.75 8.69 5.28 7.22a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0 0-1.06Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Nightly Security Scan</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">pr-monitor</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:11px;color:var(--text-subtle);background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:3px;padding:0 4px;line-height:18px;">scheduled</div>
+              <div style="font-size:11px;color:var(--text-subtle);margin-top:2px;">3h ago</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-subtle);">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="color:#3fb950;flex-shrink:0;"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm3.78 4.78a.75.75 0 0 0-1.06 0L6.75 8.69 5.28 7.22a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0 0-1.06Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Release Please</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">pr-monitor</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:11px;color:var(--text-subtle);background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:3px;padding:0 4px;line-height:18px;">push</div>
+              <div style="font-size:11px;color:var(--text-subtle);margin-top:2px;">1d ago</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="color:#d29922;flex-shrink:0;"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm1.5 0a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v3.5l2.25 2.25a.75.75 0 0 1-1.06 1.06l-2.5-2.5A.75.75 0 0 1 7 9V4.75a.75.75 0 0 1 1.5 0Z"/></svg>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Deploy to Production</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">city-planet</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:11px;color:var(--text-subtle);background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:3px;padding:0 4px;line-height:18px;">manual</div>
+              <div style="font-size:11px;color:var(--text-subtle);margin-top:2px;">just now</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

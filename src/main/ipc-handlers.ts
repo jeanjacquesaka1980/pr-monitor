@@ -1,6 +1,6 @@
 import { app, ipcMain, shell, BrowserWindow } from 'electron'
 import { checkAuth, getGithubBaseUrl, runGh } from './auth'
-import { fetchPRs } from './github'
+import { fetchPRs, fetchWorkflowRuns } from './github'
 import { readPrefs, writePrefs } from './prefs'
 import type { Preferences } from '../shared/types'
 
@@ -53,6 +53,10 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
     } catch {
       return []
     }
+  })
+
+  ipcMain.handle('workflows:fetch', async (_event, repos: string[]) => {
+    return fetchWorkflowRuns(Array.isArray(repos) ? repos : [])
   })
 
   ipcMain.handle('app:check-update', async () => {

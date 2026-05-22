@@ -93,4 +93,16 @@ export interface Preferences {
   hiddenRepos: string[]
   watchedUsers: string[]
   showUnresolvedComments: boolean
+  showWorkflowJobs: boolean
+}
+
+export interface WorkflowRun {
+  id: number
+  name: string
+  repo: string
+  event: string
+  status: string
+  conclusion: string | null
+  createdAt: string
+  htmlUrl: string
 }
