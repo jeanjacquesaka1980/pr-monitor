@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.9.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.8.1...v1.9.0) (2026-05-22)
+
+
+### Features
+
+* show update notification banner when a newer version is available ([526a63e](https://github.com/jeanjacquesaka1980/pr-monitor/commit/526a63e71ec20aff1c6f129f2a8162d2f1468dd4))
+* show update notification banner when a newer version is available ([#22](https://github.com/jeanjacquesaka1980/pr-monitor/issues/22)) ([4ac387c](https://github.com/jeanjacquesaka1980/pr-monitor/commit/4ac387c2cd914b14b267b87052a55585efc42dab))
+
 ## [1.8.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.8.0...v1.8.1) (2026-05-22)
 
 
