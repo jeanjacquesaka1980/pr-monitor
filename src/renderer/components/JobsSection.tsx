@@ -156,25 +156,17 @@ export function JobsSection({ runs }: JobsSectionProps): React.ReactElement {
         <CounterLabel>{runs.length}</CounterLabel>
       </Box>
 
-      {open && (
-        runs.length === 0 ? (
-          <Box sx={{ px: 3, py: 4, textAlign: 'center' }}>
-            <Text sx={{ fontSize: 1, color: 'fg.subtle' }}>No workflow runs found</Text>
+      {open && grouped.map(([repo, repoRuns]) => (
+        <Box key={repo}>
+          <Box sx={{ px: 3, py: '6px', bg: 'canvas.inset', borderBottom: '1px solid', borderColor: 'border.subtle' }}>
+            <Text sx={{ fontSize: 0, color: 'fg.muted', fontWeight: 'semibold' }}>
+              {repo.split('/')[1] ?? repo}
+            </Text>
+            <Text sx={{ fontSize: 0, color: 'fg.subtle' }}> · {repo.split('/')[0]}</Text>
           </Box>
-        ) : (
-          grouped.map(([repo, repoRuns]) => (
-            <Box key={repo}>
-              <Box sx={{ px: 3, py: '6px', bg: 'canvas.inset', borderBottom: '1px solid', borderColor: 'border.subtle' }}>
-                <Text sx={{ fontSize: 0, color: 'fg.muted', fontWeight: 'semibold' }}>
-                  {repo.split('/')[1] ?? repo}
-                </Text>
-                <Text sx={{ fontSize: 0, color: 'fg.subtle' }}> · {repo.split('/')[0]}</Text>
-              </Box>
-              {repoRuns.map((run) => <JobRow key={run.id} run={run} />)}
-            </Box>
-          ))
-        )
-      )}
+          {repoRuns.map((run) => <JobRow key={run.id} run={run} />)}
+        </Box>
+      ))}
     </Box>
   )
 }

@@ -199,7 +199,7 @@ export function App(): React.ReactElement {
                     emptyMessage={watchedUsers.length === 0 ? 'Select authors to see their PRs' : 'No open PRs from watched authors'}
                     showUnresolvedComments={showUnresolvedComments}
                   />
-                  {showWorkflowJobs && (
+                  {showWorkflowJobs && workflowRuns.length > 0 && (
                     <JobsSection runs={workflowRuns} />
                   )}
                 </>
