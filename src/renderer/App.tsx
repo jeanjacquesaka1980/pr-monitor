@@ -8,6 +8,7 @@ import { AuthGate } from './components/AuthGate'
 import { ErrorBanner } from './components/ErrorBanner'
 import { PreferencesPanel } from './components/Preferences'
 import { RepoWarningBanner } from './components/RepoWarningBanner'
+import { UpdateBanner } from './components/UpdateBanner'
 import type { PullRequest } from '@shared/types'
 
 export function App(): React.ReactElement {
@@ -18,8 +19,17 @@ export function App(): React.ReactElement {
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
   const [watchedUsers, setWatchedUsers] = useState<string[]>([])
   const [showUnresolvedComments, setShowUnresolvedComments] = useState(false)
+  const [updateAvailable, setUpdateAvailable] = useState<string | null>(null)
   // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
   const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
+
+  useEffect(() => {
+    window.api.checkUpdate()
+      .then(({ hasUpdate, latestVersion }) => {
+        if (hasUpdate) setUpdateAvailable(latestVersion)
+      })
+      .catch(() => {})
+  }, [])
 
   // Load prefs on mount — store full object in ref, derived state in state
   useEffect(() => {
@@ -136,6 +146,7 @@ export function App(): React.ReactElement {
 
           {!showPrefs && isAuthenticated && (
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
+              {updateAvailable && <UpdateBanner version={updateAvailable} />}
               {error && <ErrorBanner message={error} />}
 
               {data && (
