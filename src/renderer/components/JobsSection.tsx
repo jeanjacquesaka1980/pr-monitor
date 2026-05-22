@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Box, Text, CounterLabel } from '@primer/react'
 import {
   ChevronDownIcon,
@@ -88,9 +88,6 @@ function JobRow({ run }: { run: WorkflowRun }): React.ReactElement {
         >
           {run.name}
         </Text>
-        <Text sx={{ fontSize: 0, color: 'fg.muted', display: 'block', mt: '2px' }}>
-          {run.repo.split('/')[1] ?? run.repo}
-        </Text>
       </Box>
       <Box sx={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
         <Box
@@ -115,6 +112,16 @@ function JobRow({ run }: { run: WorkflowRun }): React.ReactElement {
 
 export function JobsSection({ runs }: JobsSectionProps): React.ReactElement {
   const [open, setOpen] = useState(true)
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, WorkflowRun[]>()
+    for (const run of runs) {
+      const list = map.get(run.repo) ?? []
+      list.push(run)
+      map.set(run.repo, list)
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b))
+  }, [runs])
 
   return (
     <Box>
@@ -155,7 +162,17 @@ export function JobsSection({ runs }: JobsSectionProps): React.ReactElement {
             <Text sx={{ fontSize: 1, color: 'fg.subtle' }}>No workflow runs found</Text>
           </Box>
         ) : (
-          runs.map((run) => <JobRow key={`${run.repo}:${run.id}`} run={run} />)
+          grouped.map(([repo, repoRuns]) => (
+            <Box key={repo}>
+              <Box sx={{ px: 3, py: '6px', bg: 'canvas.inset', borderBottom: '1px solid', borderColor: 'border.subtle' }}>
+                <Text sx={{ fontSize: 0, color: 'fg.muted', fontWeight: 'semibold' }}>
+                  {repo.split('/')[1] ?? repo}
+                </Text>
+                <Text sx={{ fontSize: 0, color: 'fg.subtle' }}> · {repo.split('/')[0]}</Text>
+              </Box>
+              {repoRuns.map((run) => <JobRow key={run.id} run={run} />)}
+            </Box>
+          ))
         )
       )}
     </Box>
