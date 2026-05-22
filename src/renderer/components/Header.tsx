@@ -29,8 +29,8 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
   const [showUserFilter, setShowUserFilter] = useState(false)
   const filterButtonRef = useRef<HTMLButtonElement>(null)
   const userFilterButtonRef = useRef<HTMLButtonElement>(null)
-  const filterActive = hiddenRepos.length > 0
-  const userFilterActive = watchedUsers.length > 0
+  const filterActive = showFilter
+  const userFilterActive = showUserFilter
 
   const toggleFloat = (): void => {
     const next = !floating
@@ -73,50 +73,28 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
             <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>{formatTime(lastUpdated)}</Text>
           )}
           {!showingPrefs && repos.length > 0 && (
-            <Box sx={{ position: 'relative' }}>
-              <IconButton
-                ref={filterButtonRef}
-                icon={FilterIcon}
-                aria-label="Filter repositories"
-                title="Filter repositories"
-                variant="invisible"
-                size="small"
-                onClick={() => setShowFilter((v) => !v)}
-                sx={{ color: filterActive ? 'accent.fg' : 'fg.muted' }}
-              />
-              {showFilter && (
-                <RepoFilter
-                  repos={repos}
-                  hiddenRepos={hiddenRepos}
-                  onToggle={onToggleRepo}
-                  onClose={() => setShowFilter(false)}
-                  triggerRef={filterButtonRef}
-                />
-              )}
-            </Box>
+            <IconButton
+              ref={filterButtonRef}
+              icon={FilterIcon}
+              aria-label="Filter repositories"
+              title="Filter repositories"
+              variant="invisible"
+              size="small"
+              onClick={() => setShowFilter((v) => !v)}
+              sx={{ color: filterActive ? 'accent.fg' : 'fg.muted' }}
+            />
           )}
           {!showingPrefs && (
-            <Box sx={{ position: 'relative' }}>
-              <IconButton
-                ref={userFilterButtonRef}
-                icon={PeopleIcon}
-                aria-label="Filter authors"
-                title="Filter authors"
-                variant="invisible"
-                size="small"
-                onClick={() => setShowUserFilter((v) => !v)}
-                sx={{ color: userFilterActive ? 'accent.fg' : 'fg.muted' }}
-              />
-              {showUserFilter && (
-                <UserFilter
-                  users={reviewingAuthors}
-                  watchedUsers={watchedUsers}
-                  onToggle={onToggleUser}
-                  onClose={() => setShowUserFilter(false)}
-                  triggerRef={userFilterButtonRef}
-                />
-              )}
-            </Box>
+            <IconButton
+              ref={userFilterButtonRef}
+              icon={PeopleIcon}
+              aria-label="Filter authors"
+              title="Filter authors"
+              variant="invisible"
+              size="small"
+              onClick={() => setShowUserFilter((v) => !v)}
+              sx={{ color: userFilterActive ? 'accent.fg' : 'fg.muted' }}
+            />
           )}
           {!showingPrefs && (loading ? (
             <Spinner size="small" />
@@ -160,6 +138,24 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
           />
         </Box>
       </Box>
+      {showFilter && (
+        <RepoFilter
+          repos={repos}
+          hiddenRepos={hiddenRepos}
+          onToggle={onToggleRepo}
+          onClose={() => setShowFilter(false)}
+          triggerRef={filterButtonRef}
+        />
+      )}
+      {showUserFilter && (
+        <UserFilter
+          users={reviewingAuthors}
+          watchedUsers={watchedUsers}
+          onToggle={onToggleUser}
+          onClose={() => setShowUserFilter(false)}
+          triggerRef={userFilterButtonRef}
+        />
+      )}
     </Box>
   )
 }

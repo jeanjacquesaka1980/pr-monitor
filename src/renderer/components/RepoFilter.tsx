@@ -17,9 +17,7 @@ export function RepoFilter({ repos, hiddenRepos, onToggle, onClose, triggerRef }
       const target = e.target as Node
       const insideDropdown = ref.current?.contains(target) ?? false
       const insideTrigger = triggerRef.current?.contains(target) ?? false
-      if (!insideDropdown && !insideTrigger) {
-        onClose()
-      }
+      if (!insideDropdown && !insideTrigger) onClose()
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -29,21 +27,15 @@ export function RepoFilter({ repos, hiddenRepos, onToggle, onClose, triggerRef }
     <Box
       ref={ref}
       sx={{
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        mt: 1,
-        minWidth: '220px',
-        bg: 'canvas.overlay',
-        border: '1px solid',
+        borderTop: '1px solid',
         borderColor: 'border.default',
-        borderRadius: 2,
-        boxShadow: 'shadow.large',
-        zIndex: 100,
-        overflow: 'hidden',
+        maxHeight: '260px',
+        display: 'flex',
+        flexDirection: 'column',
+        bg: 'canvas.overlay',
       }}
     >
-      <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'border.muted' }}>
+      <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'border.muted', flexShrink: 0 }}>
         <Text sx={{ fontSize: 0, fontWeight: 'semibold', color: 'fg.muted' }}>Filter by repository</Text>
       </Box>
       {repos.length === 0 ? (
@@ -51,27 +43,29 @@ export function RepoFilter({ repos, hiddenRepos, onToggle, onClose, triggerRef }
           <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>No repositories</Text>
         </Box>
       ) : (
-        repos.map((repo) => (
-          <Box
-            key={repo}
-            as="label"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              px: 3,
-              py: '8px',
-              cursor: 'pointer',
-              '&:hover': { bg: 'canvas.subtle' },
-            }}
-          >
-            <Checkbox
-              checked={!hiddenRepos.includes(repo)}
-              onChange={() => onToggle(repo)}
-            />
-            <Text sx={{ fontSize: 0, color: 'fg.default' }}>{repo}</Text>
-          </Box>
-        ))
+        <Box sx={{ overflowY: 'auto', flex: 1 }}>
+          {repos.map((repo) => (
+            <Box
+              key={repo}
+              as="label"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                px: 3,
+                py: '8px',
+                cursor: 'pointer',
+                '&:hover': { bg: 'canvas.subtle' },
+              }}
+            >
+              <Checkbox
+                checked={!hiddenRepos.includes(repo)}
+                onChange={() => onToggle(repo)}
+              />
+              <Text sx={{ fontSize: 0, color: 'fg.default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{repo}</Text>
+            </Box>
+          ))}
+        </Box>
       )}
     </Box>
   )

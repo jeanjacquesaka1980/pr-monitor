@@ -14,6 +14,7 @@ declare global {
       setPrefs: (prefs: Preferences) => Promise<void>
       getVersion: () => Promise<string>
       checkUpdate: () => Promise<{ hasUpdate: boolean; latestVersion: string }>
+      listRepos: () => Promise<string[]>
     }
   }
 }

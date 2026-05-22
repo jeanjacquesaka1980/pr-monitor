@@ -29,21 +29,15 @@ export function UserFilter({ users, watchedUsers, onToggle, onClose, triggerRef 
     <Box
       ref={ref}
       sx={{
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        mt: 1,
-        minWidth: '220px',
-        bg: 'canvas.overlay',
-        border: '1px solid',
+        borderTop: '1px solid',
         borderColor: 'border.default',
-        borderRadius: 2,
-        boxShadow: 'shadow.large',
-        zIndex: 100,
-        overflow: 'hidden',
+        maxHeight: '260px',
+        display: 'flex',
+        flexDirection: 'column',
+        bg: 'canvas.overlay',
       }}
     >
-      <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'border.muted' }}>
+      <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'border.muted', flexShrink: 0 }}>
         <Text sx={{ fontSize: 0, fontWeight: 'semibold', color: 'fg.muted' }}>Filter by author</Text>
       </Box>
       {users.length === 0 ? (
@@ -51,27 +45,29 @@ export function UserFilter({ users, watchedUsers, onToggle, onClose, triggerRef 
           <Text sx={{ fontSize: 0, color: 'fg.subtle' }}>No authors</Text>
         </Box>
       ) : (
-        users.map((login) => (
-          <Box
-            key={login}
-            as="label"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              px: 3,
-              py: '8px',
-              cursor: 'pointer',
-              '&:hover': { bg: 'canvas.subtle' },
-            }}
-          >
-            <Checkbox
-              checked={watchedUsers.includes(login)}
-              onChange={() => onToggle(login)}
-            />
-            <Text sx={{ fontSize: 0, color: 'fg.default' }}>{login}</Text>
-          </Box>
-        ))
+        <Box sx={{ overflowY: 'auto', flex: 1 }}>
+          {users.map((login) => (
+            <Box
+              key={login}
+              as="label"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                px: 3,
+                py: '8px',
+                cursor: 'pointer',
+                '&:hover': { bg: 'canvas.subtle' },
+              }}
+            >
+              <Checkbox
+                checked={watchedUsers.includes(login)}
+                onChange={() => onToggle(login)}
+              />
+              <Text sx={{ fontSize: 0, color: 'fg.default' }}>{login}</Text>
+            </Box>
+          ))}
+        </Box>
       )}
     </Box>
   )
