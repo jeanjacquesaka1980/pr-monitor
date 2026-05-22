@@ -13,6 +13,7 @@ declare global {
       getPrefs: () => Promise<Preferences>
       setPrefs: (prefs: Preferences) => Promise<void>
       getVersion: () => Promise<string>
+      checkUpdate: () => Promise<{ hasUpdate: boolean; latestVersion: string }>
     }
   }
 }

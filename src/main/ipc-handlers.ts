@@ -1,5 +1,5 @@
 import { app, ipcMain, shell, BrowserWindow } from 'electron'
-import { checkAuth, getGithubBaseUrl } from './auth'
+import { checkAuth, getGithubBaseUrl, runGh } from './auth'
 import { fetchPRs } from './github'
 import { readPrefs, writePrefs } from './prefs'
 import type { Preferences } from '../shared/types'
@@ -45,4 +45,15 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
   })
 
   ipcMain.handle('app:version', () => app.getVersion())
+
+  ipcMain.handle('app:check-update', async () => {
+    try {
+      const current = app.getVersion()
+      const raw = await runGh('release', 'view', '--repo', 'jeanjacquesaka1980/pr-monitor', '--json', 'tagName', '--jq', '.tagName')
+      const latest = raw.trim().replace(/^v/, '')
+      return { hasUpdate: latest !== current, latestVersion: latest }
+    } catch {
+      return { hasUpdate: false, latestVersion: '' }
+    }
+  })
 }
