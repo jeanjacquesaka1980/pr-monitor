@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.11.0...v1.12.0) (2026-05-22)
+
+
+### Features
+
+* improve login screen with guided steps and check again button ([779a342](https://github.com/jeanjacquesaka1980/pr-monitor/commit/779a342c2027e5a15c078540855ead82937acaf2))
+* improve login screen with guided steps and check again button ([#29](https://github.com/jeanjacquesaka1980/pr-monitor/issues/29)) ([3e5c329](https://github.com/jeanjacquesaka1980/pr-monitor/commit/3e5c3293a1477773a31d33cc5395dd690a07a625))
+
 ## [1.11.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.10.0...v1.11.0) (2026-05-22)
 
 
