@@ -18,7 +18,7 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
   useEffect(() => {
     window.api.getPrefs()
       .then(setPrefs)
-      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true, hiddenRepos: [], watchedUsers: [], showUnresolvedComments: false }))
+      .catch(() => setPrefs({ launchAtLogin: false, startMinimised: true, hiddenRepos: [], watchedUsers: [], showUnresolvedComments: false, showWorkflowJobs: false }))
   }, [])
 
   const update = (patch: Partial<Preferences>): void => {
@@ -93,6 +93,21 @@ export function PreferencesPanel({ onClose }: PreferencesProps): React.ReactElem
               aria-labelledby="show-unresolved-comments-label"
               checked={prefs.showUnresolvedComments}
               onClick={() => update({ showUnresolvedComments: !prefs.showUnresolvedComments })}
+              size="small"
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 3 }}>
+            <Box>
+              <Text sx={{ fontSize: 1, color: 'fg.default', display: 'block' }}>Workflow jobs</Text>
+              <Text sx={{ fontSize: 0, color: 'fg.muted', display: 'block', mt: 1 }}>
+                Show scheduled, manual, and push workflow runs not tied to a PR
+              </Text>
+            </Box>
+            <ToggleSwitch
+              aria-labelledby="show-workflow-jobs-label"
+              checked={prefs.showWorkflowJobs}
+              onClick={() => update({ showWorkflowJobs: !prefs.showWorkflowJobs })}
               size="small"
             />
           </Box>

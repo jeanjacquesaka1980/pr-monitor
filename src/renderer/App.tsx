@@ -9,7 +9,8 @@ import { ErrorBanner } from './components/ErrorBanner'
 import { PreferencesPanel } from './components/Preferences'
 import { RepoWarningBanner } from './components/RepoWarningBanner'
 import { UpdateBanner } from './components/UpdateBanner'
-import type { PullRequest } from '@shared/types'
+import { JobsSection } from './components/JobsSection'
+import type { PullRequest, WorkflowRun } from '@shared/types'
 
 export function App(): React.ReactElement {
   const auth = useAuth()
@@ -19,6 +20,8 @@ export function App(): React.ReactElement {
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
   const [watchedUsers, setWatchedUsers] = useState<string[]>([])
   const [showUnresolvedComments, setShowUnresolvedComments] = useState(false)
+  const [showWorkflowJobs, setShowWorkflowJobs] = useState(false)
+  const [workflowRuns, setWorkflowRuns] = useState<WorkflowRun[]>([])
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null)
   const [allKnownRepos, setAllKnownRepos] = useState<string[]>([])
   // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
@@ -46,9 +49,22 @@ export function App(): React.ReactElement {
         setHiddenRepos(p.hiddenRepos ?? [])
         setWatchedUsers(p.watchedUsers ?? [])
         setShowUnresolvedComments(p.showUnresolvedComments ?? false)
+        setShowWorkflowJobs(p.showWorkflowJobs ?? false)
       })
       .catch(() => {})
   }, [])
+
+  // Fetch workflow runs whenever showWorkflowJobs is enabled or allRepos changes
+  const allReposRef = useRef<string[]>([])
+
+  useEffect(() => {
+    if (!showWorkflowJobs) return
+    const repos = allReposRef.current.filter((r) => !hiddenRepos.includes(r))
+    if (repos.length === 0) return
+    window.api.fetchWorkflowRuns(repos)
+      .then(setWorkflowRuns)
+      .catch(() => {})
+  }, [showWorkflowJobs, hiddenRepos])
 
   // All unique repos — from current PRs + all repos the user is associated with
   const allRepos = useMemo(() => {
@@ -57,7 +73,9 @@ export function App(): React.ReactElement {
       data.authored.forEach((pr) => repos.add(pr.repository.nameWithOwner))
       data.reviewing.forEach((pr) => repos.add(pr.repository.nameWithOwner))
     }
-    return Array.from(repos).sort()
+    const sorted = Array.from(repos).sort()
+    allReposRef.current = sorted
+    return sorted
   }, [data, allKnownRepos])
 
   // All unique authors from the reviewing list (unfiltered by repo)
@@ -137,6 +155,7 @@ export function App(): React.ReactElement {
                   setHiddenRepos(p.hiddenRepos ?? [])
                   setWatchedUsers(p.watchedUsers ?? [])
                   setShowUnresolvedComments(p.showUnresolvedComments ?? false)
+                  setShowWorkflowJobs(p.showWorkflowJobs ?? false)
                 })
                 .catch(() => {})
             }} />
@@ -180,6 +199,9 @@ export function App(): React.ReactElement {
                     emptyMessage={watchedUsers.length === 0 ? 'Select authors to see their PRs' : 'No open PRs from watched authors'}
                     showUnresolvedComments={showUnresolvedComments}
                   />
+                  {showWorkflowJobs && (
+                    <JobsSection runs={workflowRuns} />
+                  )}
                 </>
               )}
             </Box>

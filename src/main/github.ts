@@ -7,6 +7,7 @@ import type {
   CheckStatus,
   CheckConclusion,
   FetchPRsResponse,
+  WorkflowRun,
 } from '../shared/types'
 
 const PR_FRAGMENT = `
@@ -270,4 +271,54 @@ export async function fetchPRs(): Promise<FetchPRsResponse> {
     .filter((pr) => !authoredIds.has(pr.id))
 
   return { ok: true, data: { authored, reviewing } }
+}
+
+interface RawWorkflowRunData {
+  id: number
+  name: string
+  event: string
+  status: string
+  conclusion: string | null
+  created_at: string
+  html_url: string
+}
+
+export async function fetchWorkflowRuns(repos: string[]): Promise<WorkflowRun[]> {
+  if (repos.length === 0) return []
+
+  const results = await Promise.allSettled(
+    repos.map(async (repo) => {
+      const stdout = await runGh('api', `repos/${repo}/actions/runs?per_page=50`)
+      const data = JSON.parse(stdout) as { workflow_runs: RawWorkflowRunData[] }
+      return { repo, runs: data.workflow_runs }
+    })
+  )
+
+  const all: WorkflowRun[] = []
+  for (const result of results) {
+    if (result.status !== 'fulfilled') continue
+    const { repo, runs } = result.value
+    const latest = new Map<string, RawWorkflowRunData>()
+    for (const run of runs) {
+      if (run.event === 'pull_request') continue
+      const existing = latest.get(run.name)
+      if (!existing || run.created_at > existing.created_at) {
+        latest.set(run.name, run)
+      }
+    }
+    for (const run of latest.values()) {
+      all.push({
+        id: run.id,
+        name: run.name,
+        repo,
+        event: run.event,
+        status: run.status,
+        conclusion: run.conclusion,
+        createdAt: run.created_at,
+        htmlUrl: run.html_url,
+      })
+    }
+  }
+
+  return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }

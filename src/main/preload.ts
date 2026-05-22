@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { CheckAuthResult, FetchPRsResponse, Preferences } from '../shared/types'
+import type { CheckAuthResult, FetchPRsResponse, Preferences, WorkflowRun } from '../shared/types'
 
 contextBridge.exposeInMainWorld('api', {
   checkAuth: (): Promise<CheckAuthResult> => ipcRenderer.invoke('auth:check'),
@@ -12,4 +12,5 @@ contextBridge.exposeInMainWorld('api', {
   getVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
   checkUpdate: (): Promise<{ hasUpdate: boolean; latestVersion: string }> => ipcRenderer.invoke('app:check-update'),
   listRepos: (): Promise<string[]> => ipcRenderer.invoke('repos:list'),
+  fetchWorkflowRuns: (repos: string[]): Promise<WorkflowRun[]> => ipcRenderer.invoke('workflows:fetch', repos),
 })
