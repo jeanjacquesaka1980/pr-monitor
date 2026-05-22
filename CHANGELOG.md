@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.8.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.8.0...v1.8.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* align icon and text in repo warning banners, add bottom padding ([2f1671e](https://github.com/jeanjacquesaka1980/pr-monitor/commit/2f1671eaad1c8779e7c42ce6c6d752544a0458f2))
+* align icon and text in repo warning banners, add bottom padding ([#19](https://github.com/jeanjacquesaka1980/pr-monitor/issues/19)) ([0156b98](https://github.com/jeanjacquesaka1980/pr-monitor/commit/0156b98af908e4fb3b518ac6cfa2534523abc431))
+
 ## [1.8.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.7.3...v1.8.0) (2026-05-21)
 
 
