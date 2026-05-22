@@ -20,8 +20,15 @@ export function App(): React.ReactElement {
   const [watchedUsers, setWatchedUsers] = useState<string[]>([])
   const [showUnresolvedComments, setShowUnresolvedComments] = useState(false)
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null)
+  const [allKnownRepos, setAllKnownRepos] = useState<string[]>([])
   // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
   const prefsRef = useRef<import('@shared/types').Preferences | null>(null)
+
+  useEffect(() => {
+    window.api.listRepos()
+      .then(setAllKnownRepos)
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     window.api.checkUpdate()
@@ -43,15 +50,15 @@ export function App(): React.ReactElement {
       .catch(() => {})
   }, [])
 
-  // All unique repos across both sections
+  // All unique repos — from current PRs + all repos the user is associated with
   const allRepos = useMemo(() => {
-    if (!data) return []
-    const repos = new Set([
-      ...data.authored.map((pr) => pr.repository.nameWithOwner),
-      ...data.reviewing.map((pr) => pr.repository.nameWithOwner),
-    ])
+    const repos = new Set(allKnownRepos)
+    if (data) {
+      data.authored.forEach((pr) => repos.add(pr.repository.nameWithOwner))
+      data.reviewing.forEach((pr) => repos.add(pr.repository.nameWithOwner))
+    }
     return Array.from(repos).sort()
-  }, [data])
+  }, [data, allKnownRepos])
 
   // All unique authors from the reviewing list (unfiltered by repo)
   const allReviewingAuthors = useMemo(() => {
@@ -101,7 +108,6 @@ export function App(): React.ReactElement {
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
-            overflow: 'hidden',
             bg: 'canvas.default',
             fontFamily: 'normal',
           }}

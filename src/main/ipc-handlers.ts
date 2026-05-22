@@ -46,6 +46,15 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
 
   ipcMain.handle('app:version', () => app.getVersion())
 
+  ipcMain.handle('repos:list', async () => {
+    try {
+      const stdout = await runGh('repo', 'list', '--limit', '100', '--json', 'nameWithOwner', '--jq', '.[].nameWithOwner')
+      return stdout.trim().split('\n').filter(Boolean)
+    } catch {
+      return []
+    }
+  })
+
   ipcMain.handle('app:check-update', async () => {
     try {
       const current = app.getVersion()
