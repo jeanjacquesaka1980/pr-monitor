@@ -193,12 +193,14 @@ export function App(): React.ReactElement {
                     emptyMessage="No open PRs authored by you"
                     showUnresolvedComments={showUnresolvedComments}
                   />
-                  <PRSection
-                    title="Others' PRs"
-                    prs={filterReviewing(data.reviewing)}
-                    emptyMessage={watchedUsers.length === 0 ? 'Select authors to see their PRs' : 'No open PRs from watched authors'}
-                    showUnresolvedComments={showUnresolvedComments}
-                  />
+                  {watchedUsers.length > 0 && (
+                    <PRSection
+                      title="Others' PRs"
+                      prs={filterReviewing(data.reviewing)}
+                      emptyMessage="No open PRs from watched authors"
+                      showUnresolvedComments={showUnresolvedComments}
+                    />
+                  )}
                   {showWorkflowJobs && workflowRuns.length > 0 && (
                     <JobsSection runs={workflowRuns} />
                   )}
