@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flash, Text } from '@primer/react'
+import { Box, Flash, Text } from '@primer/react'
 import { AlertIcon, StopIcon } from '@primer/octicons-react'
 import type { PullRequest } from '@shared/types'
 
@@ -23,25 +23,29 @@ export function RepoWarningBanner({ prs }: RepoWarningBannerProps): React.ReactE
   if (danger.length === 0 && warning.length === 0) return null
 
   return (
-    <>
+    <Box sx={{ pb: 2 }}>
       {danger.map(([repo, count]) => (
         <Flash key={repo} variant="danger" sx={{ mx: 3, mt: 2, borderRadius: 2 }}>
-          <StopIcon />
-          <Text sx={{ fontSize: 0, ml: 1 }}>
-            <Text sx={{ fontWeight: 'semibold' }}>{repo}</Text>
-            {` has ${count} open PRs — this needs urgent attention. Start reviewing your colleagues' PRs.`}
-          </Text>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <StopIcon />
+            <Text sx={{ fontSize: 0 }}>
+              <Text sx={{ fontWeight: 'semibold' }}>{repo}</Text>
+              {` has ${count} open PRs — this needs urgent attention. Start reviewing your colleagues' PRs.`}
+            </Text>
+          </Box>
         </Flash>
       ))}
       {warning.map(([repo, count]) => (
         <Flash key={repo} variant="warning" sx={{ mx: 3, mt: 2, borderRadius: 2 }}>
-          <AlertIcon />
-          <Text sx={{ fontSize: 0, ml: 1 }}>
-            <Text sx={{ fontWeight: 'semibold' }}>{repo}</Text>
-            {` has ${count} open PRs — consider reviewing your colleagues' PRs.`}
-          </Text>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <AlertIcon />
+            <Text sx={{ fontSize: 0 }}>
+              <Text sx={{ fontWeight: 'semibold' }}>{repo}</Text>
+              {` has ${count} open PRs — consider reviewing your colleagues' PRs.`}
+            </Text>
+          </Box>
         </Flash>
       ))}
-    </>
+    </Box>
   )
 }
