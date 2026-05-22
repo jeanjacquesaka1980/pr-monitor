@@ -4,6 +4,19 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.11.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.10.0...v1.11.0) (2026-05-22)
+
+
+### Features
+
+* add workflow jobs section ([fe0b2b0](https://github.com/jeanjacquesaka1980/pr-monitor/commit/fe0b2b06f705966a8cce0c3a92f04ba588293186))
+
+
+### Bug Fixes
+
+* hide Jobs section when no runs are available ([4e3f0f7](https://github.com/jeanjacquesaka1980/pr-monitor/commit/4e3f0f7562216d5226faa580eb05c628d190ebe5))
+* hide Others PRs section when no collaborators are selected ([e9205ae](https://github.com/jeanjacquesaka1980/pr-monitor/commit/e9205aea5a996f4054f09d8037d820783e7306f3))
+
 ## [1.10.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.9.0...v1.10.0) (2026-05-22)
 
 
