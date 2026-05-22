@@ -167,7 +167,7 @@ export function App(): React.ReactElement {
             </Box>
           )}
 
-          {!showPrefs && auth.status === 'unauthenticated' && <AuthGate />}
+          {!showPrefs && auth.status === 'unauthenticated' && <AuthGate onRecheck={auth.recheck} />}
 
           {!showPrefs && isAuthenticated && (
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
