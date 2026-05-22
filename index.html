@@ -957,6 +957,25 @@
   }
   .pref-card-row:last-child { border-bottom: none; }
 
+  /* ── UPDATES SECTION ── */
+  .update-banner-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .update-banner-demo svg { flex-shrink: 0; color: var(--accent); }
+  .update-banner-demo code {
+    font-family: SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
   /* ── INSTALL SECTION ── */
   #install .section-inner {
     max-width: 640px;
@@ -1074,6 +1093,7 @@
     <li><a href="#sections">Sections</a></li>
     <li><a href="#ci">CI</a></li>
     <li><a href="#filter">Filter</a></li>
+    <li><a href="#updates">Updates</a></li>
     <li><a href="#warnings">Warnings</a></li>
     <li><a href="#authors">Authors</a></li>
     <li><a href="#comments">Comments</a></li>
@@ -1628,7 +1648,8 @@
       <div class="reveal">
         <div class="section-label">Filter</div>
         <h2 class="section-heading">Hide the noise, focus on what matters</h2>
-        <p class="section-body">The filter dropdown lets you choose which repos to show. Uncheck a repo and its PRs disappear from both sections instantly. The filter is saved to your preferences — it persists across restarts.</p>
+        <p class="section-body">The filter panel shows every repo you are associated with — not just the ones with open PRs. Uncheck a repo and its PRs disappear from both sections instantly. The panel opens inline below the header, full width, and is scrollable when you have many repos.</p>
+        <p class="section-body" style="margin-top:12px;">The filter is saved to your preferences and persists across restarts. The filter icon only highlights when the panel is open.</p>
       </div>
       <div class="reveal reveal-delay-1">
         <div class="filter-standalone">
@@ -1639,6 +1660,8 @@
           <label class="filter-cb-row"><input type="checkbox" checked onclick="return false"> acme-corp/frontend</label>
           <label class="filter-cb-row"><input type="checkbox" checked onclick="return false"> acme-corp/api</label>
           <label class="filter-cb-row"><input type="checkbox" onclick="return false"> acme-corp/backend</label>
+          <label class="filter-cb-row filter-cb-row dimmed"><input type="checkbox" checked onclick="return false"> acme-corp/docs</label>
+          <label class="filter-cb-row filter-cb-row dimmed"><input type="checkbox" checked onclick="return false"> acme-corp/infra</label>
         </div>
       </div>
     </div>
@@ -1823,6 +1846,31 @@
             <span>Unresolved comments</span>
             <div class="toggle off"></div>
           </div>
+          <div class="pref-card-row" style="border-bottom:none;padding-bottom:0;">
+            <span style="font-size:11px;color:var(--text-subtle);">- Back</span>
+            <span style="font-size:11px;color:var(--text-subtle);">v1.9.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ UPDATES ══ -->
+<section id="updates">
+  <div class="section-inner">
+    <div class="two-col reverse">
+      <div class="reveal">
+        <div class="section-label">Updates</div>
+        <h2 class="section-heading">Always know when a new version is out</h2>
+        <p class="section-body">On every launch, PR Monitor checks the latest GitHub release and compares it against the running version. If a newer version is available, a banner appears at the top of the list with the exact command to update.</p>
+        <p class="section-body" style="margin-top:12px;">The running version is also visible in the footer of the Preferences panel, so you always know exactly what you are on.</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="update-banner-demo">
+          <!-- InfoIcon -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>
+          <span>v<strong>1.9.1</strong> is available — run <code>brew upgrade --cask pr-monitor</code></span>
         </div>
       </div>
     </div>
