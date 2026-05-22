@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.10.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.9.0...v1.10.0) (2026-05-22)
+
+
+### Features
+
+* show all user repos in filter, redesign as full-width inline panel ([9ab8209](https://github.com/jeanjacquesaka1980/pr-monitor/commit/9ab82095da1e8bc4bfa04cd57484ebecbb106011))
+* show all user repos in filter, redesign as full-width inline panel ([#24](https://github.com/jeanjacquesaka1980/pr-monitor/issues/24)) ([f09ea6f](https://github.com/jeanjacquesaka1980/pr-monitor/commit/f09ea6f1f3ab635a00eacc25377aa05b51d47ef1))
+
 ## [1.9.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.8.1...v1.9.0) (2026-05-22)
 
 
