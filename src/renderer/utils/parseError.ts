@@ -4,7 +4,7 @@ interface ParsedError {
 }
 
 export function parseError(raw: string): ParsedError {
-  if (/rate limit exceeded/i.test(raw)) {
+  if (/rate limit/i.test(raw)) {
     return {
       message: 'GitHub API rate limit exceeded.',
       detail: 'Wait a few minutes then refresh. Check reset time with: gh api rate_limit',
