@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.4](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.3...v1.12.4) (2026-05-23)
+
+
+### Bug Fixes
+
+* suppress listxattr error during brew upgrade ([d878363](https://github.com/jeanjacquesaka1980/pr-monitor/commit/d878363aa4fea6dfcd25b54f05efbc3f2f4a8622))
+* suppress listxattr error during brew upgrade ([#37](https://github.com/jeanjacquesaka1980/pr-monitor/issues/37)) ([77a2d4c](https://github.com/jeanjacquesaka1980/pr-monitor/commit/77a2d4cc1d6f507e8e34b297a9152767b0bcdbc6))
+
 ## [1.12.3](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.2...v1.12.3) (2026-05-23)
 
 
