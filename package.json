@@ -1,6 +1,6 @@
 {
   "name": "pr-monitor",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "GitHub PR monitor for your menu bar",
   "main": "dist/main/index.js",
   "scripts": {
