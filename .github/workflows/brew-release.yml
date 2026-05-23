@@ -71,6 +71,14 @@ jobs:
                   break if system_command("/usr/bin/pgrep", args: ["-ix", "PR Monitor"], print_stderr: false, must_succeed: false).exit_status != 0
                   sleep 1
                 end
+                sleep 2
+              end
+
+              if File.exist?("/Applications/PR Monitor.app")
+                system_command "/usr/bin/xattr",
+                  args: ["-cr", "/Applications/PR Monitor.app"],
+                  print_stderr: false,
+                  must_succeed: false
               end
 
               caskroom_entry = File.join(ENV.fetch("HOMEBREW_PREFIX", "/usr/local"), "Caskroom", "pr-monitor")
@@ -85,6 +93,13 @@ jobs:
                   Troubleshooting: https://github.com/jeanjacquesaka1980/pr-monitor#troubleshooting
                 EOS
               end
+            end
+
+            postflight do
+              system_command "/usr/bin/xattr",
+                args: ["-dr", "com.apple.quarantine", "#{appdir}/PR Monitor.app"],
+                print_stderr: false,
+                must_succeed: false
             end
 
             app "PR Monitor.app"
