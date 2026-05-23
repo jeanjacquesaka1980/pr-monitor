@@ -1101,6 +1101,7 @@
     <li><a href="#preferences">Preferences</a></li>
     <li><a href="#login">Login</a></li>
     <li><a href="#install">Install</a></li>
+    <li><a href="#troubleshoot">Troubleshoot</a></li>
   </ul>
 </nav>
 
@@ -2012,6 +2013,63 @@ cd pr-monitor && npm install && npm run start</span></div>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.26-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
         View on GitHub &rarr;
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TROUBLESHOOT ══ -->
+<section id="troubleshoot">
+  <div class="section-inner" style="max-width:680px;margin:0 auto;">
+    <div class="reveal" style="text-align:center;margin-bottom:40px;">
+      <div class="section-label">Troubleshooting</div>
+      <h2 class="section-heading">Something not working?</h2>
+    </div>
+
+    <div class="reveal reveal-delay-1" style="display:flex;flex-direction:column;gap:24px;">
+
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">App shows a stop sign or won't launch</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">The app binary is damaged or Gatekeeper is blocking it. Reinstall cleanly:</p>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-comment"># 1. Quit PR Monitor if it is running, then move it to Trash</span>
+<span class="terminal-cmd">mv "/Applications/PR Monitor.app" ~/.Trash/</span></div>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-comment"># 2. Reinstall via Homebrew</span>
+<span class="terminal-cmd">brew reinstall --cask pr-monitor</span></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">Upgrading to a new version</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">Always quit the app before upgrading. Homebrew will warn you if it detects PR Monitor is still running.</p>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-cmd">brew upgrade --cask pr-monitor</span></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">Migrating from source install to Homebrew</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">If you previously ran the app via <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">npm run start</code>, the app in <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">/Applications</code> is not owned by Homebrew. Move it to Trash first, then install:</p>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-cmd">mv "/Applications/PR Monitor.app" ~/.Trash/
+brew install --cask pr-monitor</span></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">Not authenticated / blank screen</div>
+        <div style="padding:16px;">
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">The app will show a guided login screen with the exact steps. Run <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">gh auth login</code> in Terminal, then click <strong>Check again</strong> — no need to reopen the app.</p>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">Full uninstall</div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">Removes the app and all its data (preferences, launch agent).</p>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-cmd">brew uninstall --cask --zap pr-monitor</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

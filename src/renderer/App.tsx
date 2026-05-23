@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ThemeProvider, BaseStyles, Box, Spinner, Text } from '@primer/react'
 import { useAuth } from './hooks/useAuth'
 import { usePRs } from './hooks/usePRs'
@@ -22,6 +22,7 @@ export function App(): React.ReactElement {
   const [showUnresolvedComments, setShowUnresolvedComments] = useState(false)
   const [showWorkflowJobs, setShowWorkflowJobs] = useState(false)
   const [workflowRuns, setWorkflowRuns] = useState<WorkflowRun[]>([])
+  const [workflowRefreshTick, setWorkflowRefreshTick] = useState(0)
   const [updateAvailable, setUpdateAvailable] = useState<string | null>(null)
   const [allKnownRepos, setAllKnownRepos] = useState<string[]>([])
   // Keep a ref to the full prefs so toggle handlers never need to re-fetch them
@@ -64,7 +65,12 @@ export function App(): React.ReactElement {
     window.api.fetchWorkflowRuns(repos)
       .then(setWorkflowRuns)
       .catch(() => {})
-  }, [showWorkflowJobs, hiddenRepos])
+  }, [showWorkflowJobs, hiddenRepos, workflowRefreshTick])
+
+  const handleRefresh = useCallback(() => {
+    refresh()
+    if (showWorkflowJobs) setWorkflowRefreshTick((t) => t + 1)
+  }, [refresh, showWorkflowJobs])
 
   // All unique repos — from current PRs + all repos the user is associated with
   const allRepos = useMemo(() => {
@@ -134,7 +140,7 @@ export function App(): React.ReactElement {
             username={auth.username}
             loading={loading}
             lastUpdated={lastUpdated}
-            onRefresh={refresh}
+            onRefresh={handleRefresh}
             onOpenPrefs={() => setShowPrefs(true)}
             showingPrefs={showPrefs}
             repos={allRepos}

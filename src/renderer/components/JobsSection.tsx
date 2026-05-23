@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react'
-import { Box, Text, CounterLabel } from '@primer/react'
+import { Box, Text, CounterLabel, Spinner } from '@primer/react'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
   CheckCircleFillIcon,
   XCircleFillIcon,
   CircleSlashIcon,
-  ClockIcon,
   SkipIcon,
 } from '@primer/octicons-react'
 import type { WorkflowRun } from '@shared/types'
@@ -34,7 +33,7 @@ function eventLabel(event: string): string {
 
 function StatusIcon({ run }: { run: WorkflowRun }): React.ReactElement {
   if (run.status === 'in_progress' || run.status === 'queued') {
-    return <Box sx={{ color: 'attention.fg', display: 'flex' }}><ClockIcon size={14} /></Box>
+    return <Spinner sx={{ width: '14px', height: '14px' }} />
   }
   if (run.conclusion === 'success') {
     return <Box sx={{ color: 'success.fg', display: 'flex' }}><CheckCircleFillIcon size={14} /></Box>
@@ -48,7 +47,7 @@ function StatusIcon({ run }: { run: WorkflowRun }): React.ReactElement {
   if (run.conclusion === 'skipped') {
     return <Box sx={{ color: 'fg.subtle', display: 'flex' }}><SkipIcon size={14} /></Box>
   }
-  return <Box sx={{ color: 'fg.muted', display: 'flex' }}><ClockIcon size={14} /></Box>
+  return <Box sx={{ color: 'fg.subtle', display: 'flex' }}><SkipIcon size={14} /></Box>
 }
 
 function JobRow({ run }: { run: WorkflowRun }): React.ReactElement {

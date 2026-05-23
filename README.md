@@ -140,6 +140,40 @@ The login item is managed via a LaunchAgent plist at `~/Library/LaunchAgents/com
 
 ## Troubleshooting
 
+### App shows a stop sign or won't launch
+
+The app binary is damaged or Gatekeeper is blocking it. Quit PR Monitor if it is running, then reinstall cleanly:
+
+```bash
+mv "/Applications/PR Monitor.app" ~/.Trash/
+brew reinstall --cask pr-monitor
+```
+
+### Upgrading fails with "currently running"
+
+Homebrew detects that PR Monitor is open and refuses to upgrade. Quit the app first (click `×` or right-click the tray icon → Quit), then:
+
+```bash
+brew upgrade --cask pr-monitor
+```
+
+### Migrating from source install to Homebrew
+
+If you previously ran the app via `npm run start`, the copy in `/Applications` is not owned by Homebrew. Move it to Trash first, then install:
+
+```bash
+mv "/Applications/PR Monitor.app" ~/.Trash/
+brew install --cask pr-monitor
+```
+
+### Full uninstall
+
+Removes the app and all its data (preferences, launch agent):
+
+```bash
+brew uninstall --cask --zap pr-monitor
+```
+
 ### Force-killing the app
 
 If the app is unresponsive, the tray icon is stuck, or Quit doesn't work, use `-9` (SIGKILL — instant, no chance to ignore):
