@@ -86,7 +86,7 @@ jobs:
                 odie <<~EOS
                   PR Monitor is installed outside Homebrew (e.g. via npm run start).
                   Move it to Trash first:
-                    mv "/Applications/PR Monitor.app" ~/.Trash/
+                    rm -rf "/Applications/PR Monitor.app"
                   Then re-run:
                     brew install --cask pr-monitor
 

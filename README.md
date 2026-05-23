@@ -145,7 +145,7 @@ The login item is managed via a LaunchAgent plist at `~/Library/LaunchAgents/com
 The app binary is damaged or Gatekeeper is blocking it. Quit PR Monitor if it is running, then reinstall cleanly:
 
 ```bash
-mv "/Applications/PR Monitor.app" ~/.Trash/
+rm -rf "/Applications/PR Monitor.app"
 brew reinstall --cask pr-monitor
 ```
 
@@ -162,7 +162,7 @@ brew upgrade --cask pr-monitor
 If you previously ran the app via `npm run start`, the copy in `/Applications` is not owned by Homebrew. Move it to Trash first, then install:
 
 ```bash
-mv "/Applications/PR Monitor.app" ~/.Trash/
+rm -rf "/Applications/PR Monitor.app"
 brew install --cask pr-monitor
 ```
 

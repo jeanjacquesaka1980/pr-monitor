@@ -2031,8 +2031,8 @@ cd pr-monitor && npm install && npm run start</span></div>
         <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">App shows a stop sign or won't launch</div>
         <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
           <p style="font-size:13px;color:var(--text-muted);margin:0;">The app binary is damaged or Gatekeeper is blocking it. Reinstall cleanly:</p>
-          <div class="terminal-block" style="margin:0;"><span class="terminal-comment"># 1. Quit PR Monitor if it is running, then move it to Trash</span>
-<span class="terminal-cmd">mv "/Applications/PR Monitor.app" ~/.Trash/</span></div>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-comment"># 1. Quit PR Monitor if it is running, then remove it</span>
+<span class="terminal-cmd">rm -rf "/Applications/PR Monitor.app"</span></div>
           <div class="terminal-block" style="margin:0;"><span class="terminal-comment"># 2. Reinstall via Homebrew</span>
 <span class="terminal-cmd">brew reinstall --cask pr-monitor</span></div>
         </div>
@@ -2049,8 +2049,8 @@ cd pr-monitor && npm install && npm run start</span></div>
       <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
         <div style="padding:12px 16px;background:var(--bg-subtle);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-default);">Migrating from source install to Homebrew</div>
         <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
-          <p style="font-size:13px;color:var(--text-muted);margin:0;">If you previously ran the app via <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">npm run start</code>, the app in <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">/Applications</code> is not owned by Homebrew. Move it to Trash first, then install:</p>
-          <div class="terminal-block" style="margin:0;"><span class="terminal-cmd">mv "/Applications/PR Monitor.app" ~/.Trash/
+          <p style="font-size:13px;color:var(--text-muted);margin:0;">If you previously ran the app via <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">npm run start</code>, the app in <code style="font-family:SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--text-muted);">/Applications</code> is not owned by Homebrew. Remove it first, then install:</p>
+          <div class="terminal-block" style="margin:0;"><span class="terminal-cmd">rm -rf "/Applications/PR Monitor.app"
 brew install --cask pr-monitor</span></div>
         </div>
       </div>
