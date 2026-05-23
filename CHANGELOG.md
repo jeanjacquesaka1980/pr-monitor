@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.3](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.2...v1.12.3) (2026-05-23)
+
+
+### Bug Fixes
+
+* check tap cask version for update notification instead of release tag ([2492f7b](https://github.com/jeanjacquesaka1980/pr-monitor/commit/2492f7b19ee955ef7459f76a419f978820b1b40c))
+
 ## [1.12.2](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.1...v1.12.2) (2026-05-23)
 
 
