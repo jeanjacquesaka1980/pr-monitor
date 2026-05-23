@@ -47,8 +47,13 @@ When a feature or improvement is done, always update `index.html` (the presentat
 ## Branching - always do this before creating a new branch
 1. Run `git branch -a` to check for open/existing branches
 2. Run `git log origin/master..HEAD` to check if master is up to date
-3. If master is behind, tell the user to pull before branching
+3. Always prompt the user to pull master and give the exact command: `git checkout master && git pull origin master`
 4. Each fix/feature gets its own new branch - never reuse a merged one
+
+## Before any code change - always do this first
+1. Check full project state: current branch, staged/unstaged changes, commits not yet pushed, open branches
+2. Give the user a clear status summary
+3. Present a short concise draft of what you plan to do and wait for approval before touching any code or committing
 
 ## Session rules - non-negotiable
 - **Never commit without showing a draft to the user and getting explicit approval first**
