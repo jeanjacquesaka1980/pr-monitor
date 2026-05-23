@@ -51,6 +51,7 @@ When a feature or improvement is done, always update `index.html` (the presentat
 4. Each fix/feature gets its own new branch - never reuse a merged one
 
 ## Session rules - non-negotiable
+- **Never commit without showing a draft to the user and getting explicit approval first**
 - **Always give explicit push commands** after every commit
 - **Always remind the user to pull master first** - the local repo is frequently out of sync
 - **When a side instruction is given mid-task**, finish acknowledging it and flag what the pending next step is
