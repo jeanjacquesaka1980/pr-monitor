@@ -65,3 +65,10 @@ When a feature or improvement is done, always update `index.html` (the presentat
 ## GitHub - never do autonomously
 - Never push, create a PR, or merge a PR - commit only, user handles all GitHub operations
 - Never change repo/org settings, branch protection rules, Actions permissions, or secrets - instruct the user instead
+
+## Backlog
+- **Pixel art logo/mascot** - pixel art logo in the app window header and/or animated tray icon (animate on pending PRs, running CI, etc.)
+- **Unit tests** - component and utility unit tests
+- **Integration tests** - Playwright with mocked backend
+- **Error banner missing bottom margin**
+- **Fix profile picture** - avatar works at home but not from work (likely network/proxy issue)
