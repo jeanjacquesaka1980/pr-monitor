@@ -4,6 +4,21 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.2](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.1...v1.12.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* wait for process to die before upgrade proceeds ([ce2cbb8](https://github.com/jeanjacquesaka1980/pr-monitor/commit/ce2cbb8f10500e88ee4d78f14133cb25d184b0f6))
+
+## [1.12.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.0...v1.12.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* parse known errors into clean messages with detail lines ([bf3a4a4](https://github.com/jeanjacquesaka1980/pr-monitor/commit/bf3a4a415d855c143840feaac7e3de25aaaed0dd))
+* refresh workflow jobs on manual refresh, use spinner for in-progress ([911e1c4](https://github.com/jeanjacquesaka1980/pr-monitor/commit/911e1c4148b8034a538b43b9b8943a7fc9f6d07d))
+
 ## [1.12.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.11.0...v1.12.0) (2026-05-22)
 
 
