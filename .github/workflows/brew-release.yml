@@ -66,8 +66,11 @@ jobs:
             preflight do
               if system_command("/usr/bin/pgrep", args: ["-ix", "PR Monitor"], print_stderr: false, must_succeed: false).exit_status == 0
                 puts "PR Monitor is running -- quitting it before upgrade..."
-                system_command("/usr/bin/osascript", args: ["-e", 'quit app "PR Monitor"'], print_stderr: false, must_succeed: false)
-                sleep 2
+                system_command("/usr/bin/pkill", args: ["-ix", "PR Monitor"], print_stderr: false, must_succeed: false)
+                10.times do
+                  break if system_command("/usr/bin/pgrep", args: ["-ix", "PR Monitor"], print_stderr: false, must_succeed: false).exit_status != 0
+                  sleep 1
+                end
               end
 
               caskroom_entry = File.join(ENV.fetch("HOMEBREW_PREFIX", "/usr/local"), "Caskroom", "pr-monitor")
