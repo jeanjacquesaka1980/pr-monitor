@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.5](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.4...v1.12.5) (2026-05-23)
+
+
+### Bug Fixes
+
+* use rm -rf instead of mv to Trash in troubleshooting docs ([768f748](https://github.com/jeanjacquesaka1980/pr-monitor/commit/768f748bd9f2a7ef29c3499b7eb96c074f39d415))
+
 ## [1.12.4](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.3...v1.12.4) (2026-05-23)
 
 
