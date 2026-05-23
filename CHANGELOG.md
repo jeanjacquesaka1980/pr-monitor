@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.12.2](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.1...v1.12.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* wait for process to die before upgrade proceeds ([ce2cbb8](https://github.com/jeanjacquesaka1980/pr-monitor/commit/ce2cbb8f10500e88ee4d78f14133cb25d184b0f6))
+
 ## [1.12.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.0...v1.12.1) (2026-05-23)
 
 
