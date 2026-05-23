@@ -62,8 +62,12 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
   ipcMain.handle('app:check-update', async () => {
     try {
       const current = app.getVersion()
-      const raw = await runGh('release', 'view', '--repo', 'jeanjacquesaka1980/pr-monitor', '--json', 'tagName', '--jq', '.tagName')
-      const latest = raw.trim().replace(/^v/, '')
+      // Check the tap cask directly — only show update when brew can actually install it
+      const raw = await runGh('api', 'repos/jeanjacquesaka1980/homebrew-tap/contents/Casks/pr-monitor.rb', '--jq', '.content')
+      const decoded = Buffer.from(raw.trim(), 'base64').toString('utf-8')
+      const match = decoded.match(/version "([^"]+)"/)
+      if (!match) return { hasUpdate: false, latestVersion: '' }
+      const latest = match[1]
       return { hasUpdate: latest !== current, latestVersion: latest }
     } catch {
       return { hasUpdate: false, latestVersion: '' }
