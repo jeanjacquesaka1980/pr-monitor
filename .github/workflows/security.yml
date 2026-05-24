@@ -1,0 +1,54 @@
+name: Security
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/typescript
+            p/react
+            p/secrets
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+  electronegativity:
+    name: Electronegativity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build app
+        run: npx tsc -p tsconfig.main.json && npx vite build
+
+      - name: Run Electronegativity
+        run: npx --yes @doyensec/electronegativity -i dist -o electronegativity-report.sarif -f sarif || true
+
+      - name: Upload Electronegativity results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: electronegativity-report.sarif
+          category: electronegativity
