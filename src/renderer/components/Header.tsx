@@ -1,6 +1,18 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
 import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon, PeopleIcon } from '@primer/octicons-react'
+import ghostIdleSrc from '../assets/ghost-idle.png'
+import ghostFrame000 from '../assets/ghost-frame-000.png'
+import ghostFrame001 from '../assets/ghost-frame-001.png'
+import ghostFrame002 from '../assets/ghost-frame-002.png'
+import ghostFrame003 from '../assets/ghost-frame-003.png'
+import ghostFrame004 from '../assets/ghost-frame-004.png'
+import ghostFrame005 from '../assets/ghost-frame-005.png'
+import ghostFrame006 from '../assets/ghost-frame-006.png'
+import ghostFrame007 from '../assets/ghost-frame-007.png'
+import ghostFrame008 from '../assets/ghost-frame-008.png'
+
+const ghostFrames = [ghostFrame000, ghostFrame001, ghostFrame002, ghostFrame003, ghostFrame004, ghostFrame005, ghostFrame006, ghostFrame007, ghostFrame008]
 import { RepoFilter } from './RepoFilter'
 import { UserFilter } from './UserFilter'
 
@@ -17,6 +29,31 @@ interface HeaderProps {
   reviewingAuthors: string[]
   watchedUsers: string[]
   onToggleUser: (login: string) => void
+}
+
+function GhostIcon({ loading }: { loading: boolean }): React.ReactElement {
+  const [frame, setFrame] = useState(0)
+
+  useEffect(() => {
+    if (!loading) {
+      setFrame(0)
+      return
+    }
+    const id = setInterval(() => setFrame((f) => (f + 1) % ghostFrames.length), 80)
+    return () => clearInterval(id)
+  }, [loading])
+
+  const src = loading ? ghostFrames[frame] : ghostIdleSrc
+
+  return (
+    <img
+      src={src}
+      width={48}
+      height={48}
+      style={{ imageRendering: 'pixelated', display: 'block', flexShrink: 0 }}
+      alt="PR Monitor"
+    />
+  )
 }
 
 function formatTime(date: Date): string {
@@ -53,13 +90,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-          <svg width="18" height="18" viewBox="0 0 100 100" aria-label="PR Monitor" role="img">
-            <path d="M 15 48 A 35 35 0 0 1 85 48 L 85 78 Q 73 88 62 78 Q 50 88 38 78 Q 27 88 15 78 Z" fill="currentColor"/>
-            <ellipse cx="36" cy="42" rx="5.5" ry="6.5" fill="var(--bgColor-default, #0d1117)"/>
-            <ellipse cx="64" cy="42" rx="5.5" ry="6.5" fill="var(--bgColor-default, #0d1117)"/>
-            <path d="M 33 58 L 67 58 Q 50 72 33 58 Z" fill="var(--bgColor-default, #0d1117)"/>
-            <ellipse cx="50" cy="68" rx="7" ry="5.5" fill="#ff7b7b"/>
-          </svg>
+          <GhostIcon loading={loading} />
           <Text sx={{ fontSize: 1, fontWeight: 'semibold', color: 'fg.default', WebkitAppRegion: 'no-drag' }}>
             PR Monitor
           </Text>
@@ -96,19 +127,23 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
               sx={{ color: userFilterActive ? 'accent.fg' : 'fg.muted' }}
             />
           )}
-          {!showingPrefs && (loading ? (
-            <Spinner size="small" />
-          ) : (
-            <IconButton
-              icon={SyncIcon}
-              aria-label="Refresh PRs"
-              title="Refresh"
-              variant="invisible"
-              size="small"
-              onClick={onRefresh}
-              sx={{ color: 'fg.muted' }}
-            />
-          ))}
+          {!showingPrefs && (
+            <Box sx={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {loading ? (
+                <Spinner size="small" />
+              ) : (
+                <IconButton
+                  icon={SyncIcon}
+                  aria-label="Refresh PRs"
+                  title="Refresh"
+                  variant="invisible"
+                  size="small"
+                  onClick={onRefresh}
+                  sx={{ color: 'fg.muted' }}
+                />
+              )}
+            </Box>
+          )}
           <IconButton
             icon={floating ? PinSlashIcon : PinIcon}
             aria-label={floating ? 'Unpin window' : 'Pin window'}
