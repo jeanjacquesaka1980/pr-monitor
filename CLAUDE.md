@@ -49,6 +49,7 @@ When a feature or improvement is done, always update `index.html` (the presentat
 2. Run `git log origin/master..HEAD` to check if master is up to date
 3. Always prompt the user to pull master and give the exact command: `git checkout master && git pull origin master`
 4. Each fix/feature gets its own new branch - never reuse a merged one
+5. All commits on a branch must use the same prefix - never mix prefixes (e.g. no `docs:` and `fix:` on the same branch)
 
 ## Before any code change - always do this first
 1. Check full project state: current branch, staged/unstaged changes, commits not yet pushed, open branches
