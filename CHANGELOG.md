@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.13.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.5...v1.13.0) (2026-05-24)
+
+
+### Features
+
+* add ghost pixel art animation to header and tray startup ([4b21fd6](https://github.com/jeanjacquesaka1980/pr-monitor/commit/4b21fd61f686ec1e5e676e58b6b08dd5c39bc2ea))
+* update dock icon with new ghost and fix spinner layout shift ([3e2b87d](https://github.com/jeanjacquesaka1980/pr-monitor/commit/3e2b87d16b4c0439ed5e3f53baf0ef162d4de154))
+
 ## [1.12.5](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.4...v1.12.5) (2026-05-23)
 
 
