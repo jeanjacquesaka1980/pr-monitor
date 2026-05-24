@@ -1,6 +1,28 @@
+import path from 'path'
 import { app, Tray, BrowserWindow, nativeImage, screen, Menu } from 'electron'
 
 let tray: Tray | null = null
+
+function playStartupAnimation(staticIcon: Electron.NativeImage): void {
+  const totalFrames = 9
+  const frames: Electron.NativeImage[] = []
+
+  for (let i = 0; i < totalFrames; i++) {
+    const framePath = path.join(__dirname, `../../assets/ghost-frame-${String(i).padStart(3, '0')}.png`)
+    frames.push(nativeImage.createFromPath(framePath).resize({ width: 32, height: 32 }))
+  }
+
+  let current = 0
+  const interval = setInterval(() => {
+    if (!tray) { clearInterval(interval); return }
+    tray.setImage(frames[current])
+    current++
+    if (current >= totalFrames) {
+      clearInterval(interval)
+      tray.setImage(staticIcon)
+    }
+  }, 100)
+}
 
 function getWindow(): BrowserWindow | null {
   return BrowserWindow.getAllWindows()[0] ?? null
@@ -25,8 +47,10 @@ function positionWindow(win: BrowserWindow): void {
 
 export function createTray(iconPath: string, onQuit: () => void): Tray {
   const icon = nativeImage.createFromPath(iconPath)
-  tray = new Tray(icon.resize({ width: 18, height: 18 }))
+  const staticIcon = icon.resize({ width: 32, height: 32 })
+  tray = new Tray(staticIcon)
   tray.setToolTip(`PR Monitor v${app.getVersion()}`)
+  playStartupAnimation(staticIcon)
 
   tray.on('click', () => {
     const win = getWindow()

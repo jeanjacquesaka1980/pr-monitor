@@ -26,7 +26,7 @@ if (process.platform === 'darwin') {
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
-    width: 480,
+    width: 520,
     height: 620,
     minWidth: 380,
     minHeight: 400,
@@ -75,7 +75,7 @@ app.whenReady().then(() => {
   const win = createWindow()
   registerIpcHandlers(win, quit)
 
-  const iconPath = path.join(__dirname, '../../assets/tray-icon.png')
+  const iconPath = path.join(__dirname, '../../assets/ghost-idle.png')
   createTray(iconPath, quit)
 
   // Show window on launch unless startMinimised is on or macOS opened it hidden
