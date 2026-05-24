@@ -4,3 +4,5 @@ release/
 *.icns
 *.ico
 logo-preview.html
+CLAUDE.md
+.claude/
