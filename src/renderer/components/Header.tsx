@@ -127,19 +127,23 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
               sx={{ color: userFilterActive ? 'accent.fg' : 'fg.muted' }}
             />
           )}
-          {!showingPrefs && (loading ? (
-            <Spinner size="small" />
-          ) : (
-            <IconButton
-              icon={SyncIcon}
-              aria-label="Refresh PRs"
-              title="Refresh"
-              variant="invisible"
-              size="small"
-              onClick={onRefresh}
-              sx={{ color: 'fg.muted' }}
-            />
-          ))}
+          {!showingPrefs && (
+            <Box sx={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {loading ? (
+                <Spinner size="small" />
+              ) : (
+                <IconButton
+                  icon={SyncIcon}
+                  aria-label="Refresh PRs"
+                  title="Refresh"
+                  variant="invisible"
+                  size="small"
+                  onClick={onRefresh}
+                  sx={{ color: 'fg.muted' }}
+                />
+              )}
+            </Box>
+          )}
           <IconButton
             icon={floating ? PinSlashIcon : PinIcon}
             aria-label={floating ? 'Unpin window' : 'Pin window'}
