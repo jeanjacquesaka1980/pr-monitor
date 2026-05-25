@@ -14,7 +14,7 @@ export function UpdateBanner({ version }: UpdateBannerProps): React.ReactElement
         <Text sx={{ fontSize: 0 }}>
           {'v'}<Text sx={{ fontWeight: 'semibold' }}>{version}</Text>
           {' is available — run '}
-          <Text as="span" sx={{ fontFamily: 'mono' }}>brew upgrade --cask pr-monitor</Text>
+          <Text as="span" sx={{ fontFamily: 'mono' }}>brew update && brew upgrade --cask pr-monitor && brew cleanup</Text>
         </Text>
       </Box>
     </Flash>
