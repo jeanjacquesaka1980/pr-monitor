@@ -33,7 +33,7 @@ Launch from Spotlight (`Cmd+Space` → `PR Monitor`) or from Applications. You c
 **To upgrade to a new version:**
 
 ```bash
-brew upgrade --cask pr-monitor
+brew update && brew upgrade --cask pr-monitor && brew cleanup
 ```
 
 ---
@@ -154,7 +154,7 @@ brew reinstall --cask pr-monitor
 Homebrew detects that PR Monitor is open and refuses to upgrade. Quit the app first (click `×` or right-click the tray icon → Quit), then:
 
 ```bash
-brew upgrade --cask pr-monitor
+brew update && brew upgrade --cask pr-monitor && brew cleanup
 ```
 
 ### Migrating from source install to Homebrew
