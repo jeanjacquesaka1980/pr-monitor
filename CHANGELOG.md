@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.13.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.0...v1.13.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* use full brew update && upgrade && cleanup command ([e68c552](https://github.com/jeanjacquesaka1980/pr-monitor/commit/e68c552bbb3bf5a79a2b84f95550fe862d4b6ba7))
+* use full brew update && upgrade && cleanup command ([#46](https://github.com/jeanjacquesaka1980/pr-monitor/issues/46)) ([b370fba](https://github.com/jeanjacquesaka1980/pr-monitor/commit/b370fba48b4d6c8f348cc7efaa6e7021099fda7f))
+
 ## [1.13.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.12.5...v1.13.0) (2026-05-24)
 
 
