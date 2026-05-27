@@ -33,7 +33,7 @@ function eventLabel(event: string): string {
 
 function StatusIcon({ run }: { run: WorkflowRun }): React.ReactElement {
   if (run.status === 'in_progress' || run.status === 'queued') {
-    return <Spinner sx={{ width: '14px', height: '14px' }} />
+    return <Box sx={{ color: 'attention.fg', display: 'flex' }}><Spinner sx={{ width: '14px', height: '14px' }} /></Box>
   }
   if (run.conclusion === 'success') {
     return <Box sx={{ color: 'success.fg', display: 'flex' }}><CheckCircleFillIcon size={14} /></Box>
