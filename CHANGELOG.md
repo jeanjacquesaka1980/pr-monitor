@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.13.2](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.1...v1.13.2) (2026-05-27)
+
+
+### Bug Fixes
+
+* set spinner color to attention.fg in workflow jobs section ([f25e931](https://github.com/jeanjacquesaka1980/pr-monitor/commit/f25e9310d30779f8be6036a536846fee4590c4de))
+* set spinner color to attention.fg in workflow jobs section ([#48](https://github.com/jeanjacquesaka1980/pr-monitor/issues/48)) ([ccb6e99](https://github.com/jeanjacquesaka1980/pr-monitor/commit/ccb6e99fb9f28ab367136d08cfaf1bc22eceb862))
+
 ## [1.13.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.0...v1.13.1) (2026-05-25)
 
 
