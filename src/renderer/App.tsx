@@ -181,7 +181,7 @@ export function App(): React.ReactElement {
               {error && <ErrorBanner message={error} />}
 
               {data && (
-                <RepoWarningBanner prs={[...filterPRs(data.authored), ...filterReviewing(data.reviewing)]} />
+                <RepoWarningBanner prs={[...filterPRs(data.authored), ...filterPRs(data.reviewing)]} />
               )}
 
               {!data && loading && (
