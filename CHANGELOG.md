@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.13.3](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.2...v1.13.3) (2026-05-28)
+
+
+### Bug Fixes
+
+* show repo PR warnings even when no collaborator selected ([162f3b5](https://github.com/jeanjacquesaka1980/pr-monitor/commit/162f3b5d42b95915e36de73f9903ef3038af8acf))
+* show repo PR warnings even when no collaborator selected ([#51](https://github.com/jeanjacquesaka1980/pr-monitor/issues/51)) ([34ea269](https://github.com/jeanjacquesaka1980/pr-monitor/commit/34ea2695095348e81745d1ea6312021a364f4931))
+
 ## [1.13.2](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.1...v1.13.2) (2026-05-27)
 
 
