@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.13.4](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.3...v1.13.4) (2026-05-30)
+
+
+### Bug Fixes
+
+* extract shared Banner wrapper and fix error banner missing botto… ([#53](https://github.com/jeanjacquesaka1980/pr-monitor/issues/53)) ([75638ad](https://github.com/jeanjacquesaka1980/pr-monitor/commit/75638ad4e475bbe34a42cf8b20b731495762e406))
+* extract shared Banner wrapper and fix error banner missing bottom margin ([7e75948](https://github.com/jeanjacquesaka1980/pr-monitor/commit/7e75948ac44af7d05ebe736545f651cbd0d6212a))
+
 ## [1.13.3](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.2...v1.13.3) (2026-05-28)
 
 
