@@ -1,6 +1,7 @@
 import React from 'react'
-import { Box, Flash, Text } from '@primer/react'
+import { Box, Text } from '@primer/react'
 import { InfoIcon } from '@primer/octicons-react'
+import { Banner } from './Banner'
 
 interface UpdateBannerProps {
   version: string
@@ -8,7 +9,7 @@ interface UpdateBannerProps {
 
 export function UpdateBanner({ version }: UpdateBannerProps): React.ReactElement {
   return (
-    <Flash variant="default" sx={{ mx: 3, mt: 2, mb: 2, borderRadius: 2 }}>
+    <Banner variant="default">
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <InfoIcon />
         <Text sx={{ fontSize: 0 }}>
@@ -17,6 +18,6 @@ export function UpdateBanner({ version }: UpdateBannerProps): React.ReactElement
           <Text as="span" sx={{ fontFamily: 'mono' }}>brew update && brew upgrade --cask pr-monitor && brew cleanup</Text>
         </Text>
       </Box>
-    </Flash>
+    </Banner>
   )
 }

@@ -1,7 +1,8 @@
 import React from 'react'
-import { Box, Flash, Text } from '@primer/react'
+import { Box, Text } from '@primer/react'
 import { AlertIcon, StopIcon } from '@primer/octicons-react'
 import type { PullRequest } from '@shared/types'
+import { Banner } from './Banner'
 
 interface RepoWarningBannerProps {
   prs: PullRequest[]
@@ -23,9 +24,9 @@ export function RepoWarningBanner({ prs }: RepoWarningBannerProps): React.ReactE
   if (danger.length === 0 && warning.length === 0) return null
 
   return (
-    <Box sx={{ pb: 2 }}>
+    <Box>
       {danger.map(([repo, count]) => (
-        <Flash key={repo} variant="danger" sx={{ mx: 3, mt: 2, borderRadius: 2 }}>
+        <Banner key={repo} variant="danger">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <StopIcon />
             <Text sx={{ fontSize: 0 }}>
@@ -33,10 +34,10 @@ export function RepoWarningBanner({ prs }: RepoWarningBannerProps): React.ReactE
               {` has ${count} open PRs — this needs urgent attention. Start reviewing your colleagues' PRs.`}
             </Text>
           </Box>
-        </Flash>
+        </Banner>
       ))}
       {warning.map(([repo, count]) => (
-        <Flash key={repo} variant="warning" sx={{ mx: 3, mt: 2, borderRadius: 2 }}>
+        <Banner key={repo} variant="warning">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <AlertIcon />
             <Text sx={{ fontSize: 0 }}>
@@ -44,7 +45,7 @@ export function RepoWarningBanner({ prs }: RepoWarningBannerProps): React.ReactE
               {` has ${count} open PRs — consider reviewing your colleagues' PRs.`}
             </Text>
           </Box>
-        </Flash>
+        </Banner>
       ))}
     </Box>
   )
