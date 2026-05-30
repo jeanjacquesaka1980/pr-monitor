@@ -1,7 +1,8 @@
 import React from 'react'
-import { Flash, Box, Text } from '@primer/react'
+import { Box, Text } from '@primer/react'
 import { AlertIcon } from '@primer/octicons-react'
 import { parseError } from '../utils/parseError'
+import { Banner } from './Banner'
 
 interface ErrorBannerProps {
   message: string
@@ -11,7 +12,7 @@ export function ErrorBanner({ message }: ErrorBannerProps): React.ReactElement {
   const { message: title, detail } = parseError(message)
 
   return (
-    <Flash variant="danger" sx={{ mx: 3, mt: 2, borderRadius: 2 }}>
+    <Banner variant="danger">
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
         <Box sx={{ flexShrink: 0, mt: '1px' }}><AlertIcon size={14} /></Box>
         <Box>
@@ -23,6 +24,6 @@ export function ErrorBanner({ message }: ErrorBannerProps): React.ReactElement {
           )}
         </Box>
       </Box>
-    </Flash>
+    </Banner>
   )
 }
