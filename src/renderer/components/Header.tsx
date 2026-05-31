@@ -2,23 +2,36 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Box, Text, IconButton, Spinner } from '@primer/react'
 import { SyncIcon, PinIcon, PinSlashIcon, XIcon, GearIcon, FilterIcon, PeopleIcon } from '@primer/octicons-react'
 import ghostIdleSrc from '../assets/ghost-idle.png'
-import ghostFrame000 from '../assets/ghost-frame-000.png'
-import ghostFrame001 from '../assets/ghost-frame-001.png'
-import ghostFrame002 from '../assets/ghost-frame-002.png'
-import ghostFrame003 from '../assets/ghost-frame-003.png'
-import ghostFrame004 from '../assets/ghost-frame-004.png'
-import ghostFrame005 from '../assets/ghost-frame-005.png'
-import ghostFrame006 from '../assets/ghost-frame-006.png'
-import ghostFrame007 from '../assets/ghost-frame-007.png'
-import ghostFrame008 from '../assets/ghost-frame-008.png'
+import ghostEast000 from '../assets/ghost-frame-east-000.png'
+import ghostEast001 from '../assets/ghost-frame-east-001.png'
+import ghostEast002 from '../assets/ghost-frame-east-002.png'
+import ghostEast003 from '../assets/ghost-frame-east-003.png'
+import ghostEast004 from '../assets/ghost-frame-east-004.png'
+import ghostEast005 from '../assets/ghost-frame-east-005.png'
+import ghostEast006 from '../assets/ghost-frame-east-006.png'
+import ghostEast007 from '../assets/ghost-frame-east-007.png'
+import ghostEast008 from '../assets/ghost-frame-east-008.png'
+import ghostSouth000 from '../assets/ghost-frame-south-000.png'
+import ghostSouth001 from '../assets/ghost-frame-south-001.png'
+import ghostSouth002 from '../assets/ghost-frame-south-002.png'
+import ghostSouth003 from '../assets/ghost-frame-south-003.png'
+import ghostSouth004 from '../assets/ghost-frame-south-004.png'
+import ghostSouth005 from '../assets/ghost-frame-south-005.png'
+import ghostSouth006 from '../assets/ghost-frame-south-006.png'
+import ghostSouth007 from '../assets/ghost-frame-south-007.png'
+import ghostSouth008 from '../assets/ghost-frame-south-008.png'
 
-const ghostFrames = [ghostFrame000, ghostFrame001, ghostFrame002, ghostFrame003, ghostFrame004, ghostFrame005, ghostFrame006, ghostFrame007, ghostFrame008]
+const ghostEastFrames = [ghostEast000, ghostEast001, ghostEast002, ghostEast003, ghostEast004, ghostEast005, ghostEast006, ghostEast007, ghostEast008]
+const ghostSouthFrames = [ghostSouth000, ghostSouth001, ghostSouth002, ghostSouth003, ghostSouth004, ghostSouth005, ghostSouth006, ghostSouth007, ghostSouth008]
+
 import { RepoFilter } from './RepoFilter'
 import { UserFilter } from './UserFilter'
+import type { LoadingKind } from '../hooks/usePRs'
 
 interface HeaderProps {
   username: string | undefined
   loading: boolean
+  loadingKind: LoadingKind
   lastUpdated: Date | null
   onRefresh: () => void
   onOpenPrefs: () => void
@@ -31,19 +44,20 @@ interface HeaderProps {
   onToggleUser: (login: string) => void
 }
 
-function GhostIcon({ loading }: { loading: boolean }): React.ReactElement {
+function GhostIcon({ loadingKind }: { loadingKind: LoadingKind }): React.ReactElement {
   const [frame, setFrame] = useState(0)
+  const frames = loadingKind === 'manual' ? ghostEastFrames : ghostSouthFrames
 
   useEffect(() => {
-    if (!loading) {
+    if (!loadingKind) {
       setFrame(0)
       return
     }
-    const id = setInterval(() => setFrame((f) => (f + 1) % ghostFrames.length), 80)
+    const id = setInterval(() => setFrame((f) => (f + 1) % frames.length), 80)
     return () => clearInterval(id)
-  }, [loading])
+  }, [loadingKind, frames.length])
 
-  const src = loading ? ghostFrames[frame] : ghostIdleSrc
+  const src = loadingKind ? frames[frame] : ghostIdleSrc
 
   return (
     <img
@@ -60,7 +74,7 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo, reviewingAuthors, watchedUsers, onToggleUser }: HeaderProps): React.ReactElement {
+export function Header({ username, loading, loadingKind, lastUpdated, onRefresh, onOpenPrefs, showingPrefs, repos, hiddenRepos, onToggleRepo, reviewingAuthors, watchedUsers, onToggleUser }: HeaderProps): React.ReactElement {
   const [floating, setFloating] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
   const [showUserFilter, setShowUserFilter] = useState(false)
@@ -90,7 +104,7 @@ export function Header({ username, loading, lastUpdated, onRefresh, onOpenPrefs,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-          <GhostIcon loading={loading} />
+          <GhostIcon loadingKind={loadingKind} />
           <Text sx={{ fontSize: 1, fontWeight: 'semibold', color: 'fg.default', WebkitAppRegion: 'no-drag' }}>
             PR Monitor
           </Text>
