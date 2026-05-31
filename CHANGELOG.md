@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.14.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.4...v1.14.0) (2026-05-31)
+
+
+### Features
+
+* use east animation for manual refresh, south for auto refresh ([1fc6972](https://github.com/jeanjacquesaka1980/pr-monitor/commit/1fc69720c1b3d8a152753cd2b5f03123729a6e60))
+* use east animation for manual refresh, south for auto refresh ([#55](https://github.com/jeanjacquesaka1980/pr-monitor/issues/55)) ([035dbb7](https://github.com/jeanjacquesaka1980/pr-monitor/commit/035dbb771c5e86fb37f7e69efedfa446d9098dce))
+
 ## [1.13.4](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.13.3...v1.13.4) (2026-05-30)
 
 
