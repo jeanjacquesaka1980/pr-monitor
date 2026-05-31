@@ -15,7 +15,7 @@ import type { PullRequest, WorkflowRun } from '@shared/types'
 export function App(): React.ReactElement {
   const auth = useAuth()
   const isAuthenticated = auth.status === 'authenticated'
-  const { data, error, loading, lastUpdated, refresh } = usePRs(isAuthenticated)
+  const { data, error, loading, loadingKind, lastUpdated, refresh } = usePRs(isAuthenticated)
   const [showPrefs, setShowPrefs] = useState(false)
   const [hiddenRepos, setHiddenRepos] = useState<string[]>([])
   const [watchedUsers, setWatchedUsers] = useState<string[]>([])
@@ -139,6 +139,7 @@ export function App(): React.ReactElement {
           <Header
             username={auth.username}
             loading={loading}
+            loadingKind={loadingKind}
             lastUpdated={lastUpdated}
             onRefresh={handleRefresh}
             onOpenPrefs={() => setShowPrefs(true)}
