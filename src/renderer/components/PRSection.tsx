@@ -10,10 +10,10 @@ interface PRSectionProps {
   emptyMessage: string
   defaultOpen?: boolean
   showUnresolvedComments: boolean
-  openAllUrl?: string
+  onOpenAll?: () => void
 }
 
-export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUnresolvedComments, openAllUrl }: PRSectionProps): React.ReactElement {
+export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUnresolvedComments, onOpenAll }: PRSectionProps): React.ReactElement {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
@@ -57,10 +57,10 @@ export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUn
         ) : (
           <>
             {prs.map((pr) => <PRCard key={pr.id} pr={pr} showUnresolvedComments={showUnresolvedComments} />)}
-            {openAllUrl && (
+            {onOpenAll && (
               <Box
                 as="button"
-                onClick={() => window.api.openPR(openAllUrl)}
+                onClick={onOpenAll}
                 sx={{
                   display: 'block',
                   width: '100%',

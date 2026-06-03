@@ -13,4 +13,5 @@ contextBridge.exposeInMainWorld('api', {
   checkUpdate: (): Promise<{ hasUpdate: boolean; latestVersion: string }> => ipcRenderer.invoke('app:check-update'),
   listRepos: (): Promise<string[]> => ipcRenderer.invoke('repos:list'),
   fetchWorkflowRuns: (repos: string[]): Promise<WorkflowRun[]> => ipcRenderer.invoke('workflows:fetch', repos),
+  openAllMyPRs: (username: string): Promise<void> => ipcRenderer.invoke('shell:openAllMyPRs', username),
 })

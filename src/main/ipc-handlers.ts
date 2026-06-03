@@ -27,6 +27,13 @@ export function registerIpcHandlers(win: BrowserWindow, onQuit: () => void): voi
     }
   })
 
+  ipcMain.handle('shell:openAllMyPRs', async (_event, username: string) => {
+    if (typeof username !== 'string' || !username) return
+    const baseUrl = await getGithubBaseUrl()
+    const url = `${baseUrl}/pulls?q=${encodeURIComponent(`is:open is:pr author:${username}`)}`
+    await shell.openExternal(url)
+  })
+
   ipcMain.handle('window:setFloat', (_event, enabled: boolean) => {
     floating = enabled
     win.setAlwaysOnTop(enabled, 'floating')

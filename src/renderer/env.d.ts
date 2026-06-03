@@ -16,6 +16,7 @@ declare global {
       checkUpdate: () => Promise<{ hasUpdate: boolean; latestVersion: string }>
       listRepos: () => Promise<string[]>
       fetchWorkflowRuns: (repos: string[]) => Promise<WorkflowRun[]>
+      openAllMyPRs: (username: string) => Promise<void>
     }
   }
 }
