@@ -199,6 +199,7 @@ export function App(): React.ReactElement {
                     prs={filterPRs(data.authored)}
                     emptyMessage="No open PRs authored by you"
                     showUnresolvedComments={showUnresolvedComments}
+                    openAllUrl={auth.username ? `https://github.com/pulls?q=is:open+is:pr+author:${auth.username}` : undefined}
                   />
                   {watchedUsers.length > 0 && (
                     <PRSection
