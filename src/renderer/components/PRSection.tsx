@@ -10,9 +10,10 @@ interface PRSectionProps {
   emptyMessage: string
   defaultOpen?: boolean
   showUnresolvedComments: boolean
+  openAllUrl?: string
 }
 
-export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUnresolvedComments }: PRSectionProps): React.ReactElement {
+export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUnresolvedComments, openAllUrl }: PRSectionProps): React.ReactElement {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
@@ -54,7 +55,30 @@ export function PRSection({ title, prs, emptyMessage, defaultOpen = true, showUn
             <Text sx={{ fontSize: 1, color: 'fg.subtle' }}>{emptyMessage}</Text>
           </Box>
         ) : (
-          prs.map((pr) => <PRCard key={pr.id} pr={pr} showUnresolvedComments={showUnresolvedComments} />)
+          <>
+            {prs.map((pr) => <PRCard key={pr.id} pr={pr} showUnresolvedComments={showUnresolvedComments} />)}
+            {openAllUrl && (
+              <Box
+                as="button"
+                onClick={() => window.api.openPR(openAllUrl)}
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  px: 3,
+                  py: 2,
+                  border: 'none',
+                  borderTop: '1px solid',
+                  borderColor: 'border.subtle',
+                  bg: 'canvas.default',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  '&:hover': { bg: 'canvas.subtle' },
+                }}
+              >
+                <Text sx={{ fontSize: 0, color: 'fg.muted' }}>Open all in GitHub →</Text>
+              </Box>
+            )}
+          </>
         )
       )}
     </Box>
