@@ -4,6 +4,13 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.16.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.15.0...v1.16.0) (2026-06-03)
+
+
+### Features
+
+* add open all PRs in GitHub link to Your PRs section ([73ca4d5](https://github.com/jeanjacquesaka1980/pr-monitor/commit/73ca4d5439e0e80c6954c8681eb7043498735fef))
+
 ## [1.15.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.14.0...v1.15.0) (2026-06-03)
 
 
