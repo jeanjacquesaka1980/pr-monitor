@@ -4,6 +4,14 @@ All notable changes to PR Monitor are documented here.
 
 ---
 
+## [1.17.1](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.17.0...v1.17.1) (2026-09-14)
+
+
+### Bug Fixes
+
+* update electron and concurrently to resolve security vulnerabili… ([#63](https://github.com/jeanjacquesaka1980/pr-monitor/issues/63)) ([d8620b0](https://github.com/jeanjacquesaka1980/pr-monitor/commit/d8620b07bd2613401226f3cf61654b4c114ede95))
+* update electron and concurrently to resolve security vulnerabilities ([de3f955](https://github.com/jeanjacquesaka1980/pr-monitor/commit/de3f9556d2a04daf85604a12006e1431d8e87c4c))
+
 ## [1.17.0](https://github.com/jeanjacquesaka1980/pr-monitor/compare/v1.16.0...v1.17.0) (2026-06-03)
 
 
